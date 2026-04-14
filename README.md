@@ -1,43 +1,40 @@
-# :checkered_flag: NOME DO PROJETO
+# 1. Objetivo Geral
+Desenvolver um sistema de fila virtual para postos de saúde que permita o gerenciamento digital do fluxo de atendimento, possibilitando que os pacientes acompanhem sua posição na fila em tempo real, sem a necessidade de longos períodos de espera presencial.
 
-Breve descrição do que o seu projeto faz.
+# 2. Público-Alvo
+- Pacientes: indivíduos que necessitam de atendimento e desejam evitar longos períodos de espera presencial.
+- Funcionários dos postos de saúde: profissionais responsáveis pela organização e condução dos atendimentos que utilizarão o sistema para gerenciar as filas e acompanhar as presenças dos pacientes.
 
-## :technologist: Membros da equipe
+# 3. Impacto Esperado
+O sistema pretende reduzir o tempo de espera dos pacientes nos postos de saúde, permitindo que aguardem pelo atendimento de forma remota e cheguem ao posto somente perto do horário de serem atendidos.  Além disso, espera-se melhorar a organização interna dos postos de saúde por meio do controle digital da fila, permitindo o acompanhamento em tempo real dos pacientes e a redução de faltas sem aviso prévio. Isso proporciona um ganho tanto na eficiência operacional dos funcionários quanto na qualidade do serviço prestado à população.
 
-Matrícula, nome e curso dos participantes.
+# 4. Requisitos Funcionais
+- [RF01] Login Simplificado: O aplicativo deve permitir a autenticação do paciente utilizando exclusivamente o número do CPF.
 
-## :bulb: Objetivo Geral
-Descrever o objetivo de geral do projeto
+- [RF02] Cancelamento Seguro: O paciente pode cancelar seu agendamento ou lugar na fila a qualquer momento.
 
-## :eyes: Público-Alvo
-Público-alvo do projeto
+- [RF03] Realocação de Posição: O paciente deve ter a opção de ceder sua vez e ser realocado na fila, caso perceba que não chegará a tempo no posto.
 
-## :star2: Impacto Esperado
-Descreva o impacto esperado do projeto em relação ao público alvo
+- [RF04] Notificações Push: O aplicativo deve enviar alertas de sistema para o celular do paciente informando o status da fila.
 
+- [RF05] Exibição de Tempo Estimado: A interface deve mostrar uma estimativa de tempo restante até o atendimento.
 
-## :triangular_flag_on_post:	 Principais funcionalidades da aplicação
+- [RF06] Check-in de Presença: O paciente deve confirmar sua presença pelo aplicativo e a validação é feita por meio de geolocalização (RNF01).
 
-Descreva ou liste brevemente as principais funcionalidades da aplicação que será desenvolvida. 
+# 5. Requisitos Não-Funcionais
+- [RNF01] Geolocalização: O aplicativo deve utilizar o GPS do dispositivo móvel para validar a presença do paciente no posto de saúde (RF06).
 
----
+# 6. Regras de Negócio
+- [RN01] Validação de CPF: O sistema deve validar a integridade do CPF (dígito verificador) no momento do login para evitar entradas inválidas.
 
-> [!WARNING]
-> Daqui em diante o README.md só deve ser preenchido no momento da entrega final.
+- [RN02] Autenticação Dupla para Cancelamento: Para efetivar o cancelamento, o aplicativo deve exigir a inserção do CNS (Cartão Nacional de Saúde) associado ao CPF, garantindo que terceiros não cancelem o atendimento indevidamente.
 
-##  Tecnologias: 
-Liste aqui as tecnologias e bibliotecas que foram utilizadas no projeto.
+- [RN03] Limite de Realocação: O sistema permitirá apenas 1 (uma) realocação por agendamento. Ao ser utilizada, a função será bloqueada para aquele atendimento.
 
----
+- [RN04] Regra de Posição: A realocação joga o paciente para a última posição atual da sua categoria, e a ação deve ser validada utilizando o CNS.
 
-## Instruções para Execução
-[Inclua instruções claras sobre como rodar o projeto localmente. Isso é crucial para que você possa testá-lo nas próximas entregas. **Somente caso haja alguma coisa diferente do usual**
+- [RN05] Gatilhos de Notificação: O disparo deve ocorrer em momentos-chave, como: "Sua vez está próxima (faltam 3 pessoas)" e "Você foi chamado para o consultório 2".
 
-```bash
-# Clone o repositório
-git clone [https://docs.github.com/pt/repositories/creating-and-managing-repositories/about-repositories](https://docs.github.com/pt/repositories/creating-and-managing-repositories/about-repositories)
+- [RN06] Raio de Confirmação: A confirmação definitiva de presença só poderá ser feita (habilitando o botão no app) se o paciente estiver dentro de um raio geográfico pré-definido (ex: 150 metros) das coordenadas do posto de saúde.
 
-# Navegue para o diretório
-cd [nome-do-repositorio]
-
-# Siga as instruções específicas para a sua tecnologia...
+- [RN07] Cálculo Dinâmico: A previsão não deve ser um valor fixo. Ela deve ser calculada multiplicando a posição atual do paciente pelo tempo médio de duração dos últimos atendimentos daquela categoria específica.
