@@ -1,40 +1,45 @@
-# 1. Objetivo Geral
-Desenvolver um sistema de fila virtual para postos de saúde que permita o gerenciamento digital do fluxo de atendimento, possibilitando que os pacientes acompanhem sua posição na fila em tempo real, sem a necessidade de longos períodos de espera presencial.
+1. Objetivo Geral
 
-# 2. Público-Alvo
-- Pacientes: indivíduos que necessitam de atendimento e desejam evitar longos períodos de espera presencial.
-- Funcionários dos postos de saúde: profissionais responsáveis pela organização e condução dos atendimentos que utilizarão o sistema para gerenciar as filas e acompanhar as presenças dos pacientes.
+Desenvolver uma plataforma de gamificação de estudos voltada a fomentar constância e competitividade saudável por meio de grupos de estudo, métricas de produtividade e registros visuais de atividades.
 
-# 3. Impacto Esperado
-O sistema pretende reduzir o tempo de espera dos pacientes nos postos de saúde, permitindo que aguardem pelo atendimento de forma remota e cheguem ao posto somente perto do horário de serem atendidos.  Além disso, espera-se melhorar a organização interna dos postos de saúde por meio do controle digital da fila, permitindo o acompanhamento em tempo real dos pacientes e a redução de faltas sem aviso prévio. Isso proporciona um ganho tanto na eficiência operacional dos funcionários quanto na qualidade do serviço prestado à população.
+2. Público-Alvo
 
-# 4. Requisitos Funcionais
-- [RF01] Login Simplificado: O aplicativo deve permitir a autenticação do paciente utilizando exclusivamente o número do CPF.
+Estudantes Autônomos: Indivíduos que buscam motivação extra e ferramentas para rastrear seu progresso diário.
 
-- [RF02] Cancelamento Seguro: O paciente pode cancelar seu agendamento ou lugar na fila a qualquer momento.
+Grupos de Estudo e Coletivos Acadêmicos: Pessoas que desejam compartilhar rotinas, comparar desempenhos e manter um ambiente de responsabilidade mútua (accountability).
 
-- [RF03] Realocação de Posição: O paciente deve ter a opção de ceder sua vez e ser realocado na fila, caso perceba que não chegará a tempo no posto.
+3. Impacto Esperado
 
-- [RF04] Notificações Push: O aplicativo deve enviar alertas de sistema para o celular do paciente informando o status da fila.
+O sistema visa aumentar a retenção dos usuários em seus cronogramas de estudo por meio do gatilho psicológico da "streak" (ofensiva) e da validação social. Espera-se que a funcionalidade de grupos e rankings transforme o estudo em uma experiência coletiva, aumentando o senso de realização pessoal através do registro visual (fotos de resumos, livros ou telas).
 
-- [RF05] Exibição de Tempo Estimado: A interface deve mostrar uma estimativa de tempo restante até o atendimento.
+4. Requisitos Funcionais
 
-- [RF06] Check-in de Presença: O paciente deve confirmar sua presença pelo aplicativo e a validação é feita por meio de geolocalização (RNF01).
+- [RF01] Gerenciamento de Perfil: O usuário deve ser capaz de criar uma conta, definir um username (@) e visualizar suas estatísticas gerais (tempo total, quantidade de atividades e streak).
 
-# 5. Requisitos Não-Funcionais
-- [RNF01] Geolocalização: O aplicativo deve utilizar o GPS do dispositivo móvel para validar a presença do paciente no posto de saúde (RF06).
+- [RF02] Registro de Atividade: O sistema deve permitir o upload de uma foto, título, descrição e seleção de categorias para cada sessão de estudo realizada.
 
-# 6. Regras de Negócio
-- [RN01] Validação de CPF: O sistema deve validar a integridade do CPF (dígito verificador) no momento do login para evitar entradas inválidas.
+- [RF03] Cronometragem de Estudo: O aplicativo deve registrar a data de início e a duração total (tempo) de cada atividade.
 
-- [RN02] Autenticação Dupla para Cancelamento: Para efetivar o cancelamento, o aplicativo deve exigir a inserção do CNS (Cartão Nacional de Saúde) associado ao CPF, garantindo que terceiros não cancelem o atendimento indevidamente.
+- [RF04] Formação de Grupos: Usuários podem criar ou entrar em grupos, onde terão acesso a um feed de atividades exclusivo e um ranking de membros.
 
-- [RN03] Limite de Realocação: O sistema permitirá apenas 1 (uma) realocação por agendamento. Ao ser utilizada, a função será bloqueada para aquele atendimento.
+- [RF05] Sistema de Categorização: O usuário deve poder criar categorias personalizadas para organizar seus tópicos de estudo.
 
-- [RN04] Regra de Posição: A realocação joga o paciente para a última posição atual da sua categoria, e a ação deve ser validada utilizando o CNS.
+- [RF06] Ofensiva (Streak): O sistema deve contabilizar e exibir visualmente a sequência de dias consecutivos em que o usuário registrou ao menos uma atividade válida.
 
-- [RN05] Gatilhos de Notificação: O disparo deve ocorrer em momentos-chave, como: "Sua vez está próxima (faltam 3 pessoas)" e "Você foi chamado para o consultório 2".
+5. Requisitos Não-Funcionais
 
-- [RN06] Raio de Confirmação: A confirmação definitiva de presença só poderá ser feita (habilitando o botão no app) se o paciente estiver dentro de um raio geográfico pré-definido (ex: 150 metros) das coordenadas do posto de saúde.
+- [RNF01] Persistência de Dados: O sistema deve garantir que o tempo de estudo seja contabilizado corretamente mesmo se o aplicativo for fechado em segundo plano durante uma sessão.
 
-- [RN07] Cálculo Dinâmico: A previsão não deve ser um valor fixo. Ela deve ser calculada multiplicando a posição atual do paciente pelo tempo médio de duração dos últimos atendimentos daquela categoria específica.
+- [RNF02] Performance do Feed: O ranking e as atividades dos grupos devem ser atualizados em tempo real ou com latência mínima para manter a competitividade.
+
+6. Regras de Negócio
+
+- [RN01] Manutenção da Streak: A "streak" (ofensiva) é reiniciada para zero caso o usuário não publique nenhuma atividade em um intervalo superior a 24 horas desde a última publicação (ou conforme a regra de dia civil).
+
+- [RN02] Vínculo Grupo-Categoria: Ao criar um novo grupo de estudos, o sistema deve gerar automaticamente uma categoria correspondente no perfil do criador para facilitar a organização.
+
+- [RN03] Cálculo do Ranking: O ranking dentro dos grupos será definido pelo tempo total de estudo acumulado pelos membros dentro de um período específico (ex: semanal ou mensal).
+
+- [RN04] Validação de Atividade: Uma atividade só será considerada válida para a streak e para o ranking se contiver, no mínimo, um título e o registro do tempo decorrido.
+
+- [RN05] Unicidade de Username: Não poderá haver dois usuários com o mesmo username (@) na plataforma.
