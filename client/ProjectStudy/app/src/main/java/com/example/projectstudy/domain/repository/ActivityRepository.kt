@@ -1,7 +1,9 @@
 package com.example.projectstudy.domain.repository
 
-import com.example.projectstudy.domain.model.Activity
+import com.example.projectstudy.domain.model.StudyActivity
 
 interface ActivityRepository {
-    suspend fun getFeed(): List<Activity>
+
+    suspend fun getFeedActivities(): List<StudyActivity>
+
 }

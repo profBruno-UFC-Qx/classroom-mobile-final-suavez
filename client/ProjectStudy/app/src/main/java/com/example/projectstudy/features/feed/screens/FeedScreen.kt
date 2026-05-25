@@ -1,4 +1,4 @@
-package com.example.projectstudy.features.feed.screen
+package com.example.projectstudy.features.feed.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn

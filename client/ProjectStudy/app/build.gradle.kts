@@ -50,13 +50,22 @@ android {
 
 dependencies {
 
-    // Core
+    // =========================
+    // CORE
+    // =========================
+
     implementation(libs.androidx.core.ktx)
 
-    // Lifecycle
+    // =========================
+    // LIFECYCLE
+    // =========================
+
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
-    // Compose
+    // =========================
+    // COMPOSE
+    // =========================
+
     implementation(libs.androidx.activity.compose)
 
     implementation(platform(libs.androidx.compose.bom))
@@ -68,28 +77,48 @@ dependencies {
 
     debugImplementation(libs.androidx.compose.ui.tooling)
 
-    // Navigation
+    // =========================
+    // NAVIGATION
+    // =========================
+
     implementation(libs.androidx.navigation.compose)
 
-    // Coroutines
-    implementation(libs.kotlinx.coroutines.android)
+    // =========================
+    // HILT
+    // =========================
 
-    // Hilt
     implementation(libs.hilt.android)
+
+    implementation(libs.androidx.hilt.navigation.compose)
 
     ksp(libs.hilt.compiler)
 
-    // Room
+    // =========================
+    // COROUTINES
+    // =========================
+
+    implementation(libs.kotlinx.coroutines.android)
+
+    // =========================
+    // ROOM
+    // =========================
+
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
 
     ksp(libs.androidx.room.compiler)
 
-    // Retrofit
+    // =========================
+    // RETROFIT
+    // =========================
+
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
 
-    // Tests
+    // =========================
+    // TESTS
+    // =========================
+
     testImplementation(libs.junit)
 
     androidTestImplementation(libs.androidx.junit)
@@ -100,4 +129,6 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
 
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    implementation(libs.coil.compose)
 }

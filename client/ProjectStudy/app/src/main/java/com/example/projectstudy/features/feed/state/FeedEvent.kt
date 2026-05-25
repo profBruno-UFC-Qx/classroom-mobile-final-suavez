@@ -1,4 +1,7 @@
 package com.example.projectstudy.features.feed.state
 
-class FeedEvent {
+sealed interface FeedEvent {
+
+    data object Refresh : FeedEvent
+
 }
