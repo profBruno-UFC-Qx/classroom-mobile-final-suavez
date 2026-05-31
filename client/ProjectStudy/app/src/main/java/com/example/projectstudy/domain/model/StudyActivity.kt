@@ -2,12 +2,21 @@ package com.example.projectstudy.domain.model
 
 data class StudyActivity(
     val id: String,
+
+    val groupId: String,
+
     val title: String,
+    val subject: String,
     val description: String,
-    val duration: String,
-    val userName: String,
-    val userAvatar: String,
+
+    val durationMinutes: Int,
+
+    val author: ActivityAuthor,
+
     val imageUrl: String,
     val reactions: Int,
-    val createdAt: String
+
+    val createdAtMillis: Long,
+
+    val isManual: Boolean = false
 )

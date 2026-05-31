@@ -1,20 +1,36 @@
 package com.example.projectstudy.di
 
 import com.example.projectstudy.data.mock.FakeActivityRepository
+import com.example.projectstudy.data.mock.FakeGroupRepository
+import com.example.projectstudy.data.mock.FakeRankingRepository
 import com.example.projectstudy.domain.repository.ActivityRepository
+import com.example.projectstudy.domain.repository.GroupRepository
+import com.example.projectstudy.domain.repository.RankingRepository
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RepositoryModule {
+abstract class RepositoryModule {
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideActivityRepository(): ActivityRepository {
-        return FakeActivityRepository()
-    }
+    abstract fun bindActivityRepository(
+        repository: FakeActivityRepository
+    ): ActivityRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindGroupRepository(
+        repository: FakeGroupRepository
+    ): GroupRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindRankingRepository(
+        repository: FakeRankingRepository
+    ): RankingRepository
 }

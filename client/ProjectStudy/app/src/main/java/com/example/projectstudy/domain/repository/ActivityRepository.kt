@@ -4,6 +4,6 @@ import com.example.projectstudy.domain.model.StudyActivity
 
 interface ActivityRepository {
 
-    suspend fun getFeedActivities(): List<StudyActivity>
+    suspend fun getActivitiesByGroupId(groupId: String): List<StudyActivity>
 
 }

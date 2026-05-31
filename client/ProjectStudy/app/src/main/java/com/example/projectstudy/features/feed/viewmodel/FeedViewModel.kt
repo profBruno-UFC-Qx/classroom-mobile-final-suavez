@@ -1,8 +1,11 @@
 package com.example.projectstudy.features.feed.viewmodel
 
+import android.util.Printer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.projectstudy.domain.usecase.GetFeedActivitiesUseCase
+import com.example.projectstudy.domain.usecase.GetFirstUserGroupUseCase
+import com.example.projectstudy.domain.usecase.GetGroupActivitiesUseCase
+import com.example.projectstudy.domain.usecase.GetGroupRankingUseCase
 import com.example.projectstudy.features.feed.state.FeedUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -12,11 +15,14 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class FeedViewModel @Inject constructor(
-    private val getFeedActivitiesUseCase: GetFeedActivitiesUseCase
+    private val getFirstUserGroupUseCase: GetFirstUserGroupUseCase,
+    private val getGroupActivitiesUseCase: GetGroupActivitiesUseCase,
+    private val getGroupRankingUseCase: GetGroupRankingUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FeedUiState())
     val uiState = _uiState.asStateFlow()
+
 
     init {
         loadFeed()
@@ -27,15 +33,26 @@ class FeedViewModel @Inject constructor(
         viewModelScope.launch {
 
             _uiState.value = _uiState.value.copy(
-                isLoading = true
+                isLoading = true,
+                error = null
             )
 
             try {
 
-                val activities = getFeedActivitiesUseCase()
+                val group = getFirstUserGroupUseCase()
+
+                val ranking = getGroupRankingUseCase(
+                    groupId = group.id
+                )
+
+                val activities = getGroupActivitiesUseCase(
+                    groupId = group.id
+                )
 
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
+                    group = group,
+                    ranking = ranking,
                     activities = activities
                 )
 
@@ -43,7 +60,7 @@ class FeedViewModel @Inject constructor(
 
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = e.message
+                    error = e.message ?: "Erro ao carregar feed"
                 )
 
             }
