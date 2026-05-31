@@ -51,6 +51,12 @@ android {
 dependencies {
 
     // =========================
+    // ICONS
+    // =========================
+
+    implementation(libs.androidx.compose.material.icons.extended)
+
+    // =========================
     // CORE
     // =========================
 

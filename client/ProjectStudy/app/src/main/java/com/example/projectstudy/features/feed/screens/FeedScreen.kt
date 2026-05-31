@@ -17,20 +17,38 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.projectstudy.features.feed.components.ActivityCard
 import com.example.projectstudy.features.feed.components.GroupBanner
 import com.example.projectstudy.features.feed.viewmodel.FeedViewModel
-import com.example.projectstudy.features.feed.components.GroupBanner
 import com.example.projectstudy.features.feed.components.RankingSummaryCard
+import com.example.projectstudy.core.util.toFeedDateLabel
+import com.example.projectstudy.features.feed.components.FeedDateHeader
+
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
+import com.example.projectstudy.navigation.MainBottomTab
+import com.example.projectstudy.ui.components.LumioBottomBar
 
 @Composable
 fun FeedScreen(
     viewModel: FeedViewModel = hiltViewModel()
 ) {
 
+    var selectedTab by remember {
+        mutableStateOf(MainBottomTab.GROUP)
+    }
+
     val uiState by viewModel.uiState.collectAsState()
 
-    Scaffold {
-
-            padding ->
-
+    Scaffold (
+        bottomBar = {
+            LumioBottomBar(
+                selectedTab = selectedTab,
+                onTabSelected = { tab ->
+                    selectedTab = tab
+                }
+            )
+        }
+    ){ padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -49,9 +67,22 @@ fun FeedScreen(
 
                 else -> {
 
+                    val groupedActivities = uiState.activities
+                        .sortedByDescending { activity ->
+                            activity.createdAtMillis
+                        }
+                        .groupBy { activity ->
+                            activity.createdAtMillis.toFeedDateLabel()
+                        }
+
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp),
+                        contentPadding = PaddingValues(
+                            start = 16.dp,
+                            top = 12.dp,
+                            end = 16.dp,
+                            bottom = 96.dp
+                        ),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
 
@@ -65,6 +96,7 @@ fun FeedScreen(
                         }
 
                         uiState.group?.let { group ->
+
                             item {
                                 GroupBanner(
                                     group = group
@@ -77,17 +109,24 @@ fun FeedScreen(
                                     ranking = uiState.ranking
                                 )
                             }
-
                         }
 
-                        items(uiState.activities) {
+                        groupedActivities.forEach { (dateLabel, activities) ->
 
-                                activity ->
+                            item {
+                                FeedDateHeader(
+                                    label = dateLabel
+                                )
+                            }
 
-                            ActivityCard(
-                                activity = activity
-                            )
-
+                            items(
+                                items = activities,
+                                key = { activity -> activity.id }
+                            ) { activity ->
+                                ActivityCard(
+                                    activity = activity
+                                )
+                            }
                         }
                     }
                 }
