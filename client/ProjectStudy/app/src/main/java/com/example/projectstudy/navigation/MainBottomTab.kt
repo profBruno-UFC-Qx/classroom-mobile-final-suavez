@@ -1,4 +1,7 @@
 package com.example.projectstudy.navigation
 
-class MainBottomTab {
+enum class MainBottomTab {
+    GROUP,
+    RANKING,
+    PROFILE
 }

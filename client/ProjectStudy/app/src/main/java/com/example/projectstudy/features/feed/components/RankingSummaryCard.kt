@@ -6,19 +6,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.projectstudy.core.util.toDurationText
@@ -42,30 +41,52 @@ fun RankingSummaryCard(
     val leaderValue = leader.toRankingValueText(group.rankingMetric)
     val currentUserValue = currentUserEntry.toRankingValueText(group.rankingMetric)
 
+    val leaderLabel = when {
+        leader == null -> "Sem ranking"
+
+        currentUserEntry != null &&
+                currentUserEntry.position == leader.position &&
+                currentUserEntry.user.id != leader.user.id -> {
+            "${leader.position}º empatado"
+        }
+
+        else -> "${leader.position}º lugar"
+    }
+
     Card(
-        modifier = modifier
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp)
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 18.dp, vertical = 18.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+                .padding(horizontal = 16.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             RankingSide(
                 entry = leader,
                 value = leaderValue,
-                label = leader?.let { "${it.position}º lugar" } ?: "Sem ranking",
-                horizontalAlignment = Alignment.Start
+                label = leaderLabel,
+                modifier = Modifier.weight(1f)
+            )
+
+            Box(
+                modifier = Modifier
+                    .height(42.dp)
+                    .width(1.dp)
+                    .background(
+                        MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
+                    )
             )
 
             RankingSide(
                 entry = currentUserEntry,
                 value = currentUserValue,
                 label = "Você",
-                horizontalAlignment = Alignment.End
+                modifier = Modifier.weight(1f)
             )
         }
     }
@@ -76,85 +97,37 @@ private fun RankingSide(
     entry: RankingEntry?,
     value: String,
     label: String,
-    horizontalAlignment: Alignment.Horizontal,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        if (horizontalAlignment == Alignment.End) {
-            RankingTexts(
-                value = value,
-                label = label,
-                horizontalAlignment = Alignment.End
-            )
-
-            RankingAvatar(entry = entry)
-        } else {
-            RankingAvatar(entry = entry)
-
-            RankingTexts(
-                value = value,
-                label = label,
-                horizontalAlignment = Alignment.Start
+        if (entry != null) {
+            LumioAvatar(
+                initials = entry.user.avatarInitials,
+                avatarUrl = entry.user.avatarUrl,
+                colorKey = entry.user.id,
+                size = 42.dp
             )
         }
-    }
-}
 
-@Composable
-private fun RankingAvatar(
-    entry: RankingEntry?
-) {
-    if (entry != null) {
-        LumioAvatar(
-            initials = entry.user.avatarInitials,
-            avatarUrl = entry.user.avatarUrl,
-            colorKey = entry.user.id,
-            size = 48.dp
-        )
-    } else {
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)),
-            contentAlignment = Alignment.Center
-        ) {
+        Spacer(modifier = Modifier.width(10.dp))
+
+        Column {
             Text(
-                text = "—",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary,
+                text = value,
+                style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Black
             )
+
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+            )
         }
-    }
-}
-
-@Composable
-private fun RankingTexts(
-    value: String,
-    label: String,
-    horizontalAlignment: Alignment.Horizontal
-) {
-    Column(
-        horizontalAlignment = horizontalAlignment
-    ) {
-        Text(
-            text = value,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Black
-        )
-
-        Spacer(modifier = Modifier.height(2.dp))
-
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
-        )
     }
 }
 
