@@ -529,6 +529,16 @@ object MockData {
             }
     }
 
+    fun getActivitiesByUserId(userId: String): List<StudyActivity> {
+        return activities
+            .filter { activity ->
+                activity.author.id == userId
+            }
+            .sortedByDescending { activity ->
+                activity.createdAtMillis
+            }
+    }
+
     fun getCurrentUser(): User {
         return users.first { user ->
             user.id == "user_4"
