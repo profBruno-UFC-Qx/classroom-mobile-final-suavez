@@ -32,23 +32,9 @@ import com.example.projectstudy.ui.components.LumioBottomBar
 fun FeedScreen(
     viewModel: FeedViewModel = hiltViewModel()
 ) {
-
-    var selectedTab by remember {
-        mutableStateOf(MainBottomTab.GROUP)
-    }
-
     val uiState by viewModel.uiState.collectAsState()
 
-    Scaffold (
-        bottomBar = {
-            LumioBottomBar(
-                selectedTab = selectedTab,
-                onTabSelected = { tab ->
-                    selectedTab = tab
-                }
-            )
-        }
-    ){ padding ->
+    Scaffold { padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()

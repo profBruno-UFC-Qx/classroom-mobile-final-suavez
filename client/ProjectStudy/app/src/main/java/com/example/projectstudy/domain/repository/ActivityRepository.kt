@@ -6,4 +6,6 @@ interface ActivityRepository {
 
     suspend fun getActivitiesByGroupId(groupId: String): List<StudyActivity>
 
+    suspend fun getActivitiesByUserId(userId: String): List<StudyActivity>
+
 }

@@ -2,7 +2,6 @@ package com.example.projectstudy.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,10 +11,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Groups
-import androidx.compose.material.icons.outlined.Leaderboard
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,7 +24,7 @@ import com.example.projectstudy.navigation.MainBottomTab
 
 @Composable
 fun LumioBottomBar(
-    selectedTab: MainBottomTab,
+    currentRoute: String?,
     onTabSelected: (MainBottomTab) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -39,38 +34,19 @@ fun LumioBottomBar(
             .background(MaterialTheme.colorScheme.background)
             .navigationBarsPadding()
             .padding(horizontal = 12.dp, vertical = 14.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        LumioBottomBarItem(
-            label = "Grupo",
-            icon = Icons.Outlined.Groups,
-            selected = selectedTab == MainBottomTab.GROUP,
-            onClick = {
-                onTabSelected(MainBottomTab.GROUP)
-            },
-            modifier = Modifier.weight(1f)
-        )
-
-        LumioBottomBarItem(
-            label = "Ranking",
-            icon = Icons.Outlined.Leaderboard,
-            selected = selectedTab == MainBottomTab.RANKING,
-            onClick = {
-                onTabSelected(MainBottomTab.RANKING)
-            },
-            modifier = Modifier.weight(1f)
-        )
-
-        LumioBottomBarItem(
-            label = "Perfil",
-            icon = Icons.Outlined.Person,
-            selected = selectedTab == MainBottomTab.PROFILE,
-            onClick = {
-                onTabSelected(MainBottomTab.PROFILE)
-            },
-            modifier = Modifier.weight(1f)
-        )
+        MainBottomTab.entries.forEach { tab ->
+            LumioBottomBarItem(
+                label = tab.label,
+                icon = tab.icon,
+                selected = currentRoute == tab.route,
+                onClick = {
+                    onTabSelected(tab)
+                },
+                modifier = Modifier.weight(1f)
+            )
+        }
     }
 }
 

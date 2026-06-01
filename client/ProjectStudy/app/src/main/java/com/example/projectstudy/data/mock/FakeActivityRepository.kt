@@ -13,8 +13,15 @@ class FakeActivityRepository @Inject constructor() : ActivityRepository {
         delay(1000)
 
         return MockData.getActivitiesByGroupId(groupId)
-            .sortedByDescending { activity ->
-                activity.createdAtMillis
-            }
     }
+
+    override suspend fun getActivitiesByUserId(
+        userId: String
+    ): List<StudyActivity> {
+        delay(500)
+
+        return MockData.getActivitiesByUserId(userId)
+    }
+
+
 }
