@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.projectstudy.features.feed.screens.FeedScreen
 import com.example.projectstudy.features.profile.screens.ProfileScreen
 import com.example.projectstudy.ui.components.LumioBottomBar
+import com.example.projectstudy.features.session.screens.ManualSessionScreen
 
 @Composable
 fun AppNavigation() {
@@ -44,7 +45,13 @@ fun AppNavigation() {
             modifier = Modifier.padding(padding)
         ) {
             composable(MainBottomTab.GROUP.route) {
-                FeedScreen()
+                FeedScreen(
+                    onAddSessionClick = { groupId ->
+                        navController.navigate(
+                            AppRoutes.manualSession(groupId)
+                        )
+                    }
+                )
             }
 
             composable(MainBottomTab.RANKING.route) {
@@ -53,6 +60,19 @@ fun AppNavigation() {
 
             composable(MainBottomTab.PROFILE.route) {
                 ProfileScreen()
+            }
+
+            composable(
+                route = AppRoutes.MANUAL_SESSION_WITH_GROUP
+            ) {
+                ManualSessionScreen(
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
+                    onPublished = {
+                        navController.popBackStack()
+                    }
+                )
             }
         }
     }

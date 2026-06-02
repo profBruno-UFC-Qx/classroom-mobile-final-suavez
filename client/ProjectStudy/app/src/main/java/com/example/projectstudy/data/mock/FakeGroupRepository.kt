@@ -12,4 +12,10 @@ class FakeGroupRepository @Inject constructor() : GroupRepository {
 
         return MockData.groups.first()
     }
+
+    override suspend fun getUserGroups() : List<Group> {
+        delay(500)
+
+        return MockData.groups
+    }
 }

@@ -3,7 +3,7 @@ package com.example.projectstudy.domain.model
 data class StudyActivity(
     val id: String,
 
-    val groupId: String,
+    val groupIds: List<String>,
 
     val title: String,
     val subject: String,

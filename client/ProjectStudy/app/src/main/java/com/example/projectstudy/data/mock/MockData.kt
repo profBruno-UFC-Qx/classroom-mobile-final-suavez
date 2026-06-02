@@ -191,7 +191,7 @@ object MockData {
         // Hoje - group_1
         StudyActivity(
             id = "activity_1",
-            groupId = "group_1",
+            groupIds = listOf("group_1"),
             author = mariaAuthor,
             title = "Derivadas parciais",
             subject = "Cálculo II",
@@ -204,7 +204,7 @@ object MockData {
         ),
         StudyActivity(
             id = "activity_2",
-            groupId = "group_1",
+            groupIds = listOf("group_1"),
             author = rafaelAuthor,
             title = "Revisão de dinâmica",
             subject = "Física",
@@ -217,7 +217,7 @@ object MockData {
         ),
         StudyActivity(
             id = "activity_3",
-            groupId = "group_1",
+            groupIds = listOf("group_1"),
             author = joaoAuthor,
             title = "Lista de exercícios",
             subject = "Álgebra Linear",
@@ -230,7 +230,7 @@ object MockData {
         ),
         StudyActivity(
             id = "activity_4",
-            groupId = "group_1",
+            groupIds = listOf("group_1"),
             author = anaAuthor,
             title = "Resumo de mecânica",
             subject = "Física",
@@ -245,7 +245,7 @@ object MockData {
         // Ontem - group_1
         StudyActivity(
             id = "activity_5",
-            groupId = "group_1",
+            groupIds = listOf("group_1"),
             author = pedroAuthor,
             title = "Equações diferenciais",
             subject = "Cálculo III",
@@ -258,7 +258,7 @@ object MockData {
         ),
         StudyActivity(
             id = "activity_6",
-            groupId = "group_1",
+            groupIds = listOf("group_1"),
             author = larissaAuthor,
             title = "Revisão de circuitos",
             subject = "Eletricidade",
@@ -271,7 +271,7 @@ object MockData {
         ),
         StudyActivity(
             id = "activity_7",
-            groupId = "group_1",
+            groupIds = listOf("group_1"),
             author = brunoAuthor,
             title = "Integrais duplas",
             subject = "Cálculo II",
@@ -286,7 +286,7 @@ object MockData {
         // 3 dias atrás - group_1
         StudyActivity(
             id = "activity_8",
-            groupId = "group_1",
+            groupIds = listOf("group_1"),
             author = mariaAuthor,
             title = "Geometria analítica",
             subject = "Matemática",
@@ -299,7 +299,7 @@ object MockData {
         ),
         StudyActivity(
             id = "activity_9",
-            groupId = "group_1",
+            groupIds = listOf("group_1", "group_2"),
             author = joaoAuthor,
             title = "PAA - Grafos",
             subject = "Algoritmos",
@@ -314,7 +314,7 @@ object MockData {
         // group_2
         StudyActivity(
             id = "activity_10",
-            groupId = "group_2",
+            groupIds = listOf("group_2"),
             author = lucasAuthor,
             title = "Implementação da API REST",
             subject = "Programação",
@@ -327,7 +327,7 @@ object MockData {
         ),
         StudyActivity(
             id = "activity_11",
-            groupId = "group_2",
+            groupIds = listOf("group_1", "group_2"),
             author = joaoAuthor,
             title = "Compose UI",
             subject = "Android",
@@ -340,7 +340,7 @@ object MockData {
         ),
         StudyActivity(
             id = "activity_12",
-            groupId = "group_2",
+            groupIds = listOf("group_2"),
             author = pedroAuthor,
             title = "Correção de bugs",
             subject = "Mobile",
@@ -355,7 +355,7 @@ object MockData {
         // group_3
         StudyActivity(
             id = "activity_13",
-            groupId = "group_3",
+            groupIds = listOf("group_3"),
             author = anaAuthor,
             title = "Simulado de prova",
             subject = "Cálculo I",
@@ -368,7 +368,7 @@ object MockData {
         ),
         StudyActivity(
             id = "activity_14",
-            groupId = "group_3",
+            groupIds = listOf("group_3"),
             author = brunoAuthor,
             title = "Revisão de limites",
             subject = "Cálculo I",
@@ -378,6 +378,21 @@ object MockData {
             reactions = 2,
             createdAtMillis = now - (4 * ONE_DAY),
             isManual = false
+        ),
+
+        // exemplo publicado em vários grupos
+        StudyActivity(
+            id = "activity_15",
+            groupIds = listOf("group_1", "group_2", "group_3"),
+            author = joaoAuthor,
+            title = "Revisão geral",
+            subject = "Projeto e Análise de Algoritmos",
+            description = "Revisei grafos, complexidade e estratégias de prova.",
+            durationMinutes = 130,
+            imageUrl = "https://images.unsplash.com/photo-1515879218367-8466d910aaa4",
+            reactions = 9,
+            createdAtMillis = now - (5 * ONE_HOUR),
+            isManual = true
         )
     )
 
@@ -522,7 +537,7 @@ object MockData {
     fun getActivitiesByGroupId(groupId: String): List<StudyActivity> {
         return activities
             .filter { activity ->
-                activity.groupId == groupId
+               groupId in activity.groupIds
             }
             .sortedByDescending { activity ->
                 activity.createdAtMillis
