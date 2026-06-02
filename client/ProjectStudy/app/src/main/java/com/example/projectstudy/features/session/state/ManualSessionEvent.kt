@@ -18,24 +18,20 @@ sealed interface ManualSessionEvent {
         val millis: Long
     ) : ManualSessionEvent
 
-    data class StartHourChanged(
+    data class StartTimeChanged(
+        val minutes: Int
+    ) : ManualSessionEvent
+
+    data class DurationChanged(
         val value: String
     ) : ManualSessionEvent
 
-    data class StartMinuteChanged(
-        val value: String
+    data class MediaSelected(
+        val uris: List<String>
     ) : ManualSessionEvent
 
-    data class EndHourChanged(
-        val value: String
-    ) : ManualSessionEvent
-
-    data class EndMinuteChanged(
-        val value: String
-    ) : ManualSessionEvent
-
-    data class ImageUrlChanged(
-        val value: String
+    data class MediaRemoved(
+        val uri: String
     ) : ManualSessionEvent
 
     data class GroupToggled(

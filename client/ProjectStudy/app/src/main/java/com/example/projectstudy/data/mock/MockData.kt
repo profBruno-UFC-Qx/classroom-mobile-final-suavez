@@ -198,7 +198,10 @@ object MockData {
             description = "Estudando derivadas parciais e regra da cadeia.",
             durationMinutes = 135,
             imageUrl = "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8",
+            mediaUris = emptyList(),
             reactions = 4,
+            startedAtMillis = now - (1 * ONE_HOUR),
+            endedAtMillis = now - (1 * ONE_HOUR) + (135 * 60_000L),
             createdAtMillis = now - (1 * ONE_HOUR),
             isManual = true
         ),
@@ -211,7 +214,10 @@ object MockData {
             description = "Revisando dinâmica e resolvendo exercícios.",
             durationMinutes = 90,
             imageUrl = "https://images.unsplash.com/photo-1516979187457-637abb4f9353",
+            mediaUris = emptyList(),
             reactions = 1,
+            startedAtMillis = now - (2 * ONE_HOUR),
+            endedAtMillis = now - (2 * ONE_HOUR) + (90 * 60_000L),
             createdAtMillis = now - (2 * ONE_HOUR),
             isManual = false
         ),
@@ -224,7 +230,10 @@ object MockData {
             description = "Resolvendo exercícios de matrizes e determinantes.",
             durationMinutes = 82,
             imageUrl = "https://images.unsplash.com/photo-1497633762265-9d179a990aa6",
+            mediaUris = emptyList(),
             reactions = 5,
+            startedAtMillis = now - (4 * ONE_HOUR),
+            endedAtMillis = now - (4 * ONE_HOUR) + (82 * 60_000L),
             createdAtMillis = now - (4 * ONE_HOUR),
             isManual = true
         ),
@@ -237,7 +246,10 @@ object MockData {
             description = "Organizando resumo para a prova de mecânica.",
             durationMinutes = 70,
             imageUrl = "https://images.unsplash.com/photo-1481627834876-b7833e8f5570",
+            mediaUris = emptyList(),
             reactions = 3,
+            startedAtMillis = now - (6 * ONE_HOUR),
+            endedAtMillis = now - (6 * ONE_HOUR) + (70 * 60_000L),
             createdAtMillis = now - (6 * ONE_HOUR),
             isManual = false
         ),
@@ -252,7 +264,10 @@ object MockData {
             description = "Estudando EDOs de primeira ordem.",
             durationMinutes = 120,
             imageUrl = "https://images.unsplash.com/photo-1434030216411-0b793f4b4173",
+            mediaUris = emptyList(),
             reactions = 6,
+            startedAtMillis = now - ONE_DAY - (2 * ONE_HOUR),
+            endedAtMillis = now - ONE_DAY - (2 * ONE_HOUR) + (120 * 60_000L),
             createdAtMillis = now - ONE_DAY - (2 * ONE_HOUR),
             isManual = true
         ),
@@ -265,7 +280,10 @@ object MockData {
             description = "Resolução de questões sobre resistores.",
             durationMinutes = 105,
             imageUrl = "https://images.unsplash.com/photo-1509062522246-3755977927d7",
+            mediaUris = emptyList(),
             reactions = 2,
+            startedAtMillis = now - ONE_DAY - (5 * ONE_HOUR),
+            endedAtMillis = now - ONE_DAY - (5 * ONE_HOUR) + (105 * 60_000L),
             createdAtMillis = now - ONE_DAY - (5 * ONE_HOUR),
             isManual = false
         ),
@@ -278,7 +296,10 @@ object MockData {
             description = "Praticando mudança de coordenadas.",
             durationMinutes = 65,
             imageUrl = "https://images.unsplash.com/photo-1509228468518-180dd4864904",
+            mediaUris = emptyList(),
             reactions = 1,
+            startedAtMillis = now - ONE_DAY - (8 * ONE_HOUR),
+            endedAtMillis = now - ONE_DAY - (8 * ONE_HOUR) + (65 * 60_000L),
             createdAtMillis = now - ONE_DAY - (8 * ONE_HOUR),
             isManual = true
         ),
@@ -293,7 +314,10 @@ object MockData {
             description = "Retas, planos e distância entre pontos.",
             durationMinutes = 95,
             imageUrl = "https://images.unsplash.com/photo-1503676260728-1c00da094a0b",
+            mediaUris = emptyList(),
             reactions = 4,
+            startedAtMillis = now - (3 * ONE_DAY) - (3 * ONE_HOUR),
+            endedAtMillis = now - (3 * ONE_DAY) - (3 * ONE_HOUR) + (95 * 60_000L),
             createdAtMillis = now - (3 * ONE_DAY) - (3 * ONE_HOUR),
             isManual = false
         ),
@@ -306,7 +330,10 @@ object MockData {
             description = "Revisando BFS, DFS e representação de grafos.",
             durationMinutes = 110,
             imageUrl = "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
+            mediaUris = emptyList(),
             reactions = 7,
+            startedAtMillis = now - (3 * ONE_DAY) - (6 * ONE_HOUR),
+            endedAtMillis = now - (3 * ONE_DAY) - (6 * ONE_HOUR) + (110 * 60_000L),
             createdAtMillis = now - (3 * ONE_DAY) - (6 * ONE_HOUR),
             isManual = true
         ),
@@ -321,7 +348,10 @@ object MockData {
             description = "Implementando endpoints principais do projeto.",
             durationMinutes = 45,
             imageUrl = "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
+            mediaUris = emptyList(),
             reactions = 2,
+            startedAtMillis = now - (3 * ONE_HOUR),
+            endedAtMillis = now - (3 * ONE_HOUR) + (45 * 60_000L),
             createdAtMillis = now - (3 * ONE_HOUR),
             isManual = false
         ),
@@ -334,7 +364,10 @@ object MockData {
             description = "Criando componentes reutilizáveis no Jetpack Compose.",
             durationMinutes = 75,
             imageUrl = "https://images.unsplash.com/photo-1516321318423-f06f85e504b3",
+            mediaUris = emptyList(),
             reactions = 5,
+            startedAtMillis = now - ONE_DAY - ONE_HOUR,
+            endedAtMillis = now - ONE_DAY - ONE_HOUR + (75 * 60_000L),
             createdAtMillis = now - ONE_DAY - ONE_HOUR,
             isManual = false
         ),
@@ -347,7 +380,10 @@ object MockData {
             description = "Ajustando estados de loading e erro.",
             durationMinutes = 60,
             imageUrl = "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
+            mediaUris = emptyList(),
             reactions = 3,
+            startedAtMillis = now - (2 * ONE_DAY),
+            endedAtMillis = now - (2 * ONE_DAY) + (60 * 60_000L),
             createdAtMillis = now - (2 * ONE_DAY),
             isManual = true
         ),
@@ -362,7 +398,10 @@ object MockData {
             description = "Resolvendo questões antigas da disciplina.",
             durationMinutes = 150,
             imageUrl = "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
+            mediaUris = emptyList(),
             reactions = 8,
+            startedAtMillis = now - (2 * ONE_DAY) - (4 * ONE_HOUR),
+            endedAtMillis = now - (2 * ONE_DAY) - (4 * ONE_HOUR) + (150 * 60_000L),
             createdAtMillis = now - (2 * ONE_DAY) - (4 * ONE_HOUR),
             isManual = true
         ),
@@ -375,7 +414,10 @@ object MockData {
             description = "Praticando limites laterais e continuidade.",
             durationMinutes = 80,
             imageUrl = "https://images.unsplash.com/photo-1513258496099-48168024aec0",
+            mediaUris = emptyList(),
             reactions = 2,
+            startedAtMillis = now - (4 * ONE_DAY),
+            endedAtMillis = now - (4 * ONE_DAY) + (80 * 60_000L),
             createdAtMillis = now - (4 * ONE_DAY),
             isManual = false
         ),
@@ -390,8 +432,29 @@ object MockData {
             description = "Revisei grafos, complexidade e estratégias de prova.",
             durationMinutes = 130,
             imageUrl = "https://images.unsplash.com/photo-1515879218367-8466d910aaa4",
+            mediaUris = emptyList(),
             reactions = 9,
+            startedAtMillis = now - (5 * ONE_HOUR),
+            endedAtMillis = now - (5 * ONE_HOUR) + (130 * 60_000L),
             createdAtMillis = now - (5 * ONE_HOUR),
+            isManual = true
+        ),
+
+        // exemplo atravessando meia-noite, útil para testar streak depois
+        StudyActivity(
+            id = "activity_16",
+            groupIds = listOf("group_1"),
+            author = joaoAuthor,
+            title = "Estudo noturno",
+            subject = "Sistemas Distribuídos",
+            description = "Sessão longa atravessando a madrugada.",
+            durationMinutes = 240,
+            imageUrl = "https://images.unsplash.com/photo-1516321318423-f06f85e504b3",
+            mediaUris = emptyList(),
+            reactions = 6,
+            startedAtMillis = now - (2 * ONE_DAY) + (22 * ONE_HOUR),
+            endedAtMillis = now - (2 * ONE_DAY) + (22 * ONE_HOUR) + (240 * 60_000L),
+            createdAtMillis = now - (2 * ONE_DAY) + (22 * ONE_HOUR),
             isManual = true
         )
     )
@@ -540,7 +603,7 @@ object MockData {
                groupId in activity.groupIds
             }
             .sortedByDescending { activity ->
-                activity.createdAtMillis
+                activity.startedAtMillis
             }
     }
 
@@ -550,7 +613,7 @@ object MockData {
                 activity.author.id == userId
             }
             .sortedByDescending { activity ->
-                activity.createdAtMillis
+                activity.startedAtMillis
             }
     }
 

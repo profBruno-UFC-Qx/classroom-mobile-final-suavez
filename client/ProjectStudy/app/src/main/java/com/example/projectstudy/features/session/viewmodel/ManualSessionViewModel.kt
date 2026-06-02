@@ -32,6 +32,7 @@ class ManualSessionViewModel @Inject constructor(
 
     fun onEvent(event: ManualSessionEvent) {
         when (event) {
+
             is ManualSessionEvent.TitleChanged -> {
                 _uiState.value = _uiState.value.copy(
                     title = event.value,
@@ -58,54 +59,45 @@ class ManualSessionViewModel @Inject constructor(
                 )
             }
 
-            is ManualSessionEvent.StartHourChanged -> {
+            is ManualSessionEvent.StartTimeChanged -> {
                 _uiState.value = _uiState.value.copy(
-                    startHour = event.value.filter { char ->
-                        char.isDigit()
-                    }.take(2),
-                    timeError = null
+                    startTimeMinutes = event.minutes
                 )
-
-                updateDuration()
             }
 
-            is ManualSessionEvent.StartMinuteChanged -> {
-                _uiState.value = _uiState.value.copy(
-                    startMinute = event.value.filter { char ->
+            is ManualSessionEvent.DurationChanged -> {
+                val filteredValue = event.value
+                    .filter { char ->
                         char.isDigit()
-                    }.take(2),
-                    timeError = null
-                )
+                    }
 
-                updateDuration()
+                val durationMinutes = filteredValue.toIntOrNull() ?: 0
+
+                _uiState.value = _uiState.value.copy(
+                    durationText = filteredValue,
+                    durationMinutes = durationMinutes,
+                    durationError = null
+                )
             }
 
-            is ManualSessionEvent.EndHourChanged -> {
-                _uiState.value = _uiState.value.copy(
-                    endHour = event.value.filter { char ->
-                        char.isDigit()
-                    }.take(2),
-                    timeError = null
-                )
+            is ManualSessionEvent.MediaSelected -> {
+                val current = _uiState.value
 
-                updateDuration()
+                val updatedMedia = (current.selectedMediaUris + event.uris)
+                    .distinct()
+                    .take(20)
+
+                _uiState.value = current.copy(
+                    selectedMediaUris = updatedMedia,
+                    mediaError = null
+                )
             }
 
-            is ManualSessionEvent.EndMinuteChanged -> {
-                _uiState.value = _uiState.value.copy(
-                    endMinute = event.value.filter { char ->
-                        char.isDigit()
-                    }.take(2),
-                    timeError = null
-                )
+            is ManualSessionEvent.MediaRemoved -> {
+                val current = _uiState.value
 
-                updateDuration()
-            }
-
-            is ManualSessionEvent.ImageUrlChanged -> {
-                _uiState.value = _uiState.value.copy(
-                    imageUrl = event.value,
-                    imageError = null
+                _uiState.value = current.copy(
+                    selectedMediaUris = current.selectedMediaUris - event.uri
                 )
             }
 
@@ -179,23 +171,6 @@ class ManualSessionViewModel @Inject constructor(
         )
     }
 
-    private fun updateDuration() {
-        val current = _uiState.value
-
-        val start = current.startTimeInMinutesOrNull()
-        val end = current.endTimeInMinutesOrNull()
-
-        val duration = if (start != null && end != null && end > start) {
-            end - start
-        } else {
-            0
-        }
-
-        _uiState.value = current.copy(
-            durationMinutes = duration
-        )
-    }
-
     private fun publish() {
         val current = _uiState.value
 
@@ -215,11 +190,10 @@ class ManualSessionViewModel @Inject constructor(
                         title = current.title.trim(),
                         subject = current.subject.trim(),
                         description = current.description.trim(),
-                        durationMinutes = current.durationMinutes,
-                        imageUrl = current.imageUrl.trim(),
                         dateMillis = current.dateMillis,
-                        startTimeMinutes = current.startTimeInMinutesOrNull() ?: 0,
-                        endTimeMinutes = current.endTimeInMinutesOrNull() ?: 0,
+                        startTimeMinutes = current.startTimeMinutes,
+                        durationMinutes = current.durationMinutes,
+                        mediaUris = current.selectedMediaUris,
                         groupIds = current.selectedGroupIds
                     )
                 )
@@ -253,8 +227,14 @@ class ManualSessionViewModel @Inject constructor(
             null
         }
 
-        val imageError = if (state.imageUrl.isBlank()) {
-            "Adicione uma foto ou URL"
+        val durationError = if (state.durationMinutes <= 0) {
+            "Informe uma duração válida"
+        } else {
+            null
+        }
+
+        val mediaError = if (state.selectedMediaUris.isEmpty()) {
+            "Adicione pelo menos uma foto ou vídeo"
         } else {
             null
         }
@@ -265,65 +245,18 @@ class ManualSessionViewModel @Inject constructor(
             null
         }
 
-        val timeError = when {
-            state.startTimeInMinutesOrNull() == null ||
-                    state.endTimeInMinutesOrNull() == null -> {
-                "Informe início e fim"
-            }
-
-            state.durationMinutes <= 0 -> {
-                "O horário final deve ser maior que o inicial"
-            }
-
-            else -> {
-                null
-            }
-        }
-
         _uiState.value = state.copy(
             titleError = titleError,
             subjectError = subjectError,
-            imageError = imageError,
-            groupError = groupError,
-            timeError = timeError
+            durationError = durationError,
+            mediaError = mediaError,
+            groupError = groupError
         )
 
         return titleError == null &&
                 subjectError == null &&
-                imageError == null &&
-                groupError == null &&
-                timeError == null
-    }
-
-    private fun ManualSessionUiState.startTimeInMinutesOrNull(): Int? {
-        return timeInMinutesOrNull(
-            hour = startHour,
-            minute = startMinute
-        )
-    }
-
-    private fun ManualSessionUiState.endTimeInMinutesOrNull(): Int? {
-        return timeInMinutesOrNull(
-            hour = endHour,
-            minute = endMinute
-        )
-    }
-
-    private fun timeInMinutesOrNull(
-        hour: String,
-        minute: String
-    ): Int? {
-        val parsedHour = hour.toIntOrNull()
-        val parsedMinute = minute.toIntOrNull()
-
-        if (parsedHour == null || parsedMinute == null) {
-            return null
-        }
-
-        if (parsedHour !in 0..23 || parsedMinute !in 0..59) {
-            return null
-        }
-
-        return parsedHour * 60 + parsedMinute
+                durationError == null &&
+                mediaError == null &&
+                groupError == null
     }
 }

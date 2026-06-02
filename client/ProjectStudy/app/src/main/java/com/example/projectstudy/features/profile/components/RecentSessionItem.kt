@@ -67,7 +67,7 @@ fun RecentSessionItem(
                 )
 
                 Text(
-                    text = "${activity.durationMinutes.toDurationText()} · ${activity.createdAtMillis.toHourText()}",
+                    text = "${activity.durationMinutes.toDurationText()} · ${activity.startedAtMillis.toHourText()}",
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
