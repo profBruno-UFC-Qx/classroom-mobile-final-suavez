@@ -56,10 +56,10 @@ fun FeedScreen(
             else -> {
                 val groupedActivities = uiState.activities
                     .sortedByDescending { activity ->
-                        activity.createdAtMillis
+                        activity.startedAtMillis
                     }
                     .groupBy { activity ->
-                        activity.createdAtMillis.toFeedDateLabel()
+                        activity.startedAtMillis.toFeedDateLabel()
                     }
 
                 LazyColumn(

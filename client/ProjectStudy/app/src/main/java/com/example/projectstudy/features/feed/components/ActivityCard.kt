@@ -103,7 +103,7 @@ fun ActivityCard(
                     Spacer(modifier = Modifier.width(8.dp))
 
                     Text(
-                        text = activity.createdAtMillis.toHourText(),
+                        text = activity.startedAtMillis.toHourText(),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )

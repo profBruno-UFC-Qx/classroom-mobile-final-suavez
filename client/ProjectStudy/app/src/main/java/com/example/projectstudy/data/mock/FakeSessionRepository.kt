@@ -1,5 +1,7 @@
 package com.example.projectstudy.data.mock
 
+import com.example.projectstudy.core.util.buildEndedAtMillis
+import com.example.projectstudy.core.util.buildStartedAtMillis
 import com.example.projectstudy.domain.model.ActivityAuthor
 import com.example.projectstudy.domain.model.CreateManualSessionData
 import com.example.projectstudy.domain.model.StudyActivity
@@ -23,6 +25,16 @@ class FakeSessionRepository @Inject constructor() : SessionRepository {
             avatarUrl = currentUser.avatarUrl
         )
 
+        val startedAtMillis = buildStartedAtMillis(
+            dateMillis = data.dateMillis,
+            startTimeMinutes = data.startTimeMinutes
+        )
+
+        val endedAtMillis = buildEndedAtMillis(
+            startedAtMillis = startedAtMillis,
+            durationMinutes = data.durationMinutes
+        )
+
         return StudyActivity(
             id = "manual_${System.currentTimeMillis()}",
             groupIds = data.groupIds,
@@ -31,9 +43,12 @@ class FakeSessionRepository @Inject constructor() : SessionRepository {
             subject = data.subject,
             description = data.description,
             durationMinutes = data.durationMinutes,
-            imageUrl = data.imageUrl,
+            imageUrl = data.mediaUris.firstOrNull().orEmpty(),
+            mediaUris = data.mediaUris,
             reactions = 0,
-            createdAtMillis = data.dateMillis,
+            startedAtMillis = startedAtMillis,
+            endedAtMillis = endedAtMillis,
+            createdAtMillis = System.currentTimeMillis(),
             isManual = true
         )
     }

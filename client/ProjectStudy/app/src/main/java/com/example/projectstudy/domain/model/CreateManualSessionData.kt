@@ -4,10 +4,12 @@ data class CreateManualSessionData(
     val title: String,
     val subject: String,
     val description: String,
-    val durationMinutes: Int,
-    val imageUrl: String,
+
     val dateMillis: Long,
     val startTimeMinutes: Int,
-    val endTimeMinutes: Int,
+    val durationMinutes: Int,
+
+    val mediaUris: List<String>,
+
     val groupIds: List<String>
 )
