@@ -1,6 +1,6 @@
 package com.example.projectstudy.domain.usecase
 
-import com.example.projectstudy.domain.repository.RankingRepository
+import com.example.projectstudy.data.repository.RankingRepository
 import com.example.projectstudy.domain.model.RankingEntry
 import javax.inject.Inject
 

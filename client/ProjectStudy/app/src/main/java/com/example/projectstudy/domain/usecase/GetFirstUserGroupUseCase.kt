@@ -1,6 +1,6 @@
 package com.example.projectstudy.domain.usecase
 
-import com.example.projectstudy.domain.repository.GroupRepository
+import com.example.projectstudy.data.repository.GroupRepository
 import javax.inject.Inject
 
 class GetFirstUserGroupUseCase @Inject constructor(
