@@ -1,7 +1,7 @@
 package com.example.projectstudy.data.mock
 
 import com.example.projectstudy.domain.model.RankingEntry
-import com.example.projectstudy.domain.repository.RankingRepository
+import com.example.projectstudy.data.repository.RankingRepository
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 

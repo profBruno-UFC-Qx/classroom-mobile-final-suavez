@@ -1,4 +1,4 @@
-package com.example.projectstudy.domain.repository
+package com.example.projectstudy.data.repository
 
 
 import com.example.projectstudy.domain.model.StudyActivity

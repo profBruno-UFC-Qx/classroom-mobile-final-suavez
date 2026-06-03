@@ -1,7 +1,7 @@
 package com.example.projectstudy.data.mock
 
 import com.example.projectstudy.domain.model.StudyActivity
-import com.example.projectstudy.domain.repository.ActivityRepository
+import com.example.projectstudy.data.repository.ActivityRepository
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 

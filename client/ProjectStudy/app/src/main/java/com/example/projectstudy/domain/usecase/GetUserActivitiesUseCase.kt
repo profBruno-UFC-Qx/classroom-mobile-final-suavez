@@ -1,7 +1,7 @@
 package com.example.projectstudy.domain.usecase
 
 import com.example.projectstudy.domain.model.StudyActivity
-import com.example.projectstudy.domain.repository.ActivityRepository
+import com.example.projectstudy.data.repository.ActivityRepository
 import javax.inject.Inject
 
 class GetUserActivitiesUseCase @Inject constructor(

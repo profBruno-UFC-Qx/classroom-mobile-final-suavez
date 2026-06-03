@@ -1,6 +1,6 @@
 package com.example.projectstudy.domain.usecase
 
-import com.example.projectstudy.domain.repository.UserRepository
+import com.example.projectstudy.data.repository.UserRepository
 import javax.inject.Inject
 
 class GetCurrentUserUseCase @Inject constructor(

@@ -5,7 +5,7 @@ import com.example.projectstudy.core.util.buildStartedAtMillis
 import com.example.projectstudy.domain.model.ActivityAuthor
 import com.example.projectstudy.domain.model.CreateManualSessionData
 import com.example.projectstudy.domain.model.StudyActivity
-import com.example.projectstudy.domain.repository.SessionRepository
+import com.example.projectstudy.data.repository.SessionRepository
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 
