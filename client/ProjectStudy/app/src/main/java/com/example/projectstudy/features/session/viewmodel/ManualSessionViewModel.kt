@@ -13,6 +13,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlin.math.ceil
 
 @HiltViewModel
 class ManualSessionViewModel @Inject constructor(
@@ -66,15 +67,15 @@ class ManualSessionViewModel @Inject constructor(
             }
 
             is ManualSessionEvent.DurationChanged -> {
-                val filteredValue = event.value
-                    .filter { char ->
-                        char.isDigit()
-                    }
-
-                val durationMinutes = filteredValue.toIntOrNull() ?: 0
+                val durationMinutes = if (event.seconds <= 0) {
+                    0
+                } else {
+                     kotlin.math.ceil(event.seconds / 60.0).toInt()
+                }
 
                 _uiState.value = _uiState.value.copy(
-                    durationText = filteredValue,
+                    durationText = event.seconds.toString(),
+                    durationSeconds = event.seconds,
                     durationMinutes = durationMinutes,
                     durationError = null
                 )

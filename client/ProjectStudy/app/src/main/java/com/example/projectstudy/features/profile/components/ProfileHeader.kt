@@ -62,7 +62,8 @@ fun ProfileHeader(
             text = user.name,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Black,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Spacer(modifier = Modifier.height(2.dp))

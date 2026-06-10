@@ -56,23 +56,24 @@ fun ManualSessionDateTimeSection(
         }
 
         ManualSessionDurationField(
-            durationText = uiState.durationText,
-            durationMinutes = uiState.durationMinutes,
+            durationSeconds = uiState.durationSeconds,
             durationError = uiState.durationError,
-            onDurationSelected = { value ->
-                onEvent(ManualSessionEvent.DurationChanged(value))
+            onDurationSelected = { seconds ->
+                onEvent(
+                    ManualSessionEvent.DurationChanged(seconds)
+                )
             }
         )
 
-        ManualSessionInfoCard(
-            title = "Fim estimado",
-            value = getEstimatedEndTimeText(
-                startTimeMinutes = uiState.startTimeMinutes,
-                durationMinutes = uiState.durationMinutes
-            ),
-            modifier = Modifier.fillMaxWidth(),
-            onClick = null
-        )
+//        ManualSessionInfoCard(
+//            title = "Fim estimado",
+//            value = getEstimatedEndTimeText(
+//                startTimeMinutes = uiState.startTimeMinutes,
+//                durationMinutes = uiState.durationMinutes
+//            ),
+//            modifier = Modifier.fillMaxWidth(),
+//            onClick = null
+//        )
 
     }
 }

@@ -23,7 +23,7 @@ sealed interface ManualSessionEvent {
     ) : ManualSessionEvent
 
     data class DurationChanged(
-        val value: String
+        val seconds: Int
     ) : ManualSessionEvent
 
     data class MediaSelected(

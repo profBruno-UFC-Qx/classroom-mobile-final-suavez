@@ -14,8 +14,10 @@ data class ManualSessionUiState(
     val dateMillis: Long = System.currentTimeMillis(),
 
     val startTimeMinutes: Int = currentTimeInMinutes(),
-    val durationText: String = "60",
+    val durationText: String = "3600",
+    val durationSeconds: Int = 3600,
     val durationMinutes: Int = 60,
+
 
     val selectedMediaUris: List<String> = emptyList(),
 

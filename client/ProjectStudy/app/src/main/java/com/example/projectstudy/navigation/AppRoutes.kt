@@ -1,12 +1,23 @@
 package com.example.projectstudy.navigation
 
-object AppRoutes {
-    const val MANUAL_SESSION = "manual_session"
-    const val MANUAL_SESSION_WITH_GROUP = "manual_session/{groupId}"
+import androidx.navigation3.runtime.NavKey
+import kotlinx.serialization.Serializable
 
-    fun manualSession(
-        groupId: String
-    ): String {
-        return "manual_session/$groupId"
-    }
+
+sealed interface AppRoute : NavKey {
+
+    @Serializable
+    data object Group : AppRoute
+
+    @Serializable
+    data object Ranking : AppRoute
+
+    @Serializable
+    data object Profile : AppRoute
+
+    @Serializable
+    data class ManualSession(
+        val groupId: String
+    ) : AppRoute
+
 }

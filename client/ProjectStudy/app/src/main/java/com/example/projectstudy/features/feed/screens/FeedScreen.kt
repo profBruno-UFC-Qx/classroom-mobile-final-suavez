@@ -27,6 +27,9 @@ import com.example.projectstudy.features.feed.components.FeedDateHeader
 import com.example.projectstudy.features.feed.components.GroupBanner
 import com.example.projectstudy.features.feed.components.RankingSummaryCard
 import com.example.projectstudy.features.feed.viewmodel.FeedViewModel
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsPadding
 
 @Composable
 fun FeedScreen(
@@ -36,7 +39,9 @@ fun FeedScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         when {
             uiState.isLoading -> {
@@ -63,19 +68,22 @@ fun FeedScreen(
                     }
 
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .statusBarsPadding(),
                     contentPadding = PaddingValues(
                         start = 16.dp,
                         top = 12.dp,
                         end = 16.dp,
-                        bottom = 110.dp
+                        bottom = 130.dp
                     ),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     item {
                         Text(
                             text = "Feed",
-                            style = MaterialTheme.typography.titleLarge
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
@@ -119,7 +127,10 @@ fun FeedScreen(
                         },
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
-                            .padding(16.dp),
+                            .padding(
+                                end = 16.dp,
+                                bottom = 116.dp
+                            ),
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ) {
