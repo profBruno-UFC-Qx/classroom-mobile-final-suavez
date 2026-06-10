@@ -20,11 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.example.projectstudy.navigation.AppRoute
 import com.example.projectstudy.navigation.MainBottomTab
 
 @Composable
 fun LumioBottomBar(
-    currentRoute: String?,
+    currentRoute: AppRoute?,
     onTabSelected: (MainBottomTab) -> Unit,
     modifier: Modifier = Modifier
 ) {

@@ -7,24 +7,24 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.ui.graphics.vector.ImageVector
 
 enum class MainBottomTab(
-    val route: String,
+    val route: AppRoute,
     val label: String,
     val icon: ImageVector
 ) {
     GROUP(
-        route = "group",
+        route = AppRoute.Group,
         label = "Grupo",
         icon = Icons.Outlined.Groups
     ),
 
     RANKING(
-        route = "ranking",
+        route =  AppRoute.Ranking,
         label = "Ranking",
         icon = Icons.Outlined.Leaderboard
     ),
 
     PROFILE(
-        route = "profile",
+        route = AppRoute.Profile,
         label = "Perfil",
         icon = Icons.Outlined.Person
     )

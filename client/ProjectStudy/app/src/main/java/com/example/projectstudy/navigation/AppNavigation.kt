@@ -1,79 +1,94 @@
 package com.example.projectstudy.navigation
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.ui.NavDisplay
 import com.example.projectstudy.features.feed.screens.FeedScreen
 import com.example.projectstudy.features.profile.screens.ProfileScreen
-import com.example.projectstudy.ui.components.LumioBottomBar
 import com.example.projectstudy.features.session.screens.ManualSessionScreen
+import com.example.projectstudy.ui.components.LumioBottomBar
 
 @Composable
 fun AppNavigation() {
-    val navController = rememberNavController()
+    val backStack = remember {
+        mutableStateListOf<AppRoute>(
+            AppRoute.Group
+        )
+    }
 
-    val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = backStackEntry?.destination?.route
+    val currentRoute = backStack.lastOrNull()
+
+    val showBottomBar = currentRoute == AppRoute.Group ||
+            currentRoute == AppRoute.Ranking ||
+            currentRoute == AppRoute.Profile
+
+    fun goBack() {
+        if (backStack.size > 1) {
+            backStack.removeAt(backStack.lastIndex)
+        }
+    }
 
     Scaffold(
         bottomBar = {
-            LumioBottomBar(
-                currentRoute = currentRoute,
-                onTabSelected = { tab ->
-                    navController.navigate(tab.route) {
-                        popUpTo(navController.graph.startDestinationId) {
-                            saveState = true
-                        }
-
-                        launchSingleTop = true
-                        restoreState = true
+            if (showBottomBar) {
+                LumioBottomBar(
+                    currentRoute = currentRoute,
+                    onTabSelected = { tab ->
+                        backStack.clear()
+                        backStack.add(tab.route)
                     }
-                }
-            )
+                )
+            }
         }
     ) { padding ->
 
-        NavHost(
-            navController = navController,
-            startDestination = MainBottomTab.GROUP.route,
+        Box(
             modifier = Modifier.padding(padding)
         ) {
-            composable(MainBottomTab.GROUP.route) {
-                FeedScreen(
-                    onAddSessionClick = { groupId ->
-                        navController.navigate(
-                            AppRoutes.manualSession(groupId)
-                        )
+            NavDisplay(
+                backStack = backStack,
+                onBack = {
+                    goBack()
+                },
+                entryProvider = { route ->
+                    when (route) {
+                        AppRoute.Group -> NavEntry(AppRoute.Group) {
+                            FeedScreen(
+                                onAddSessionClick = { groupId ->
+                                    backStack.add(
+                                        AppRoute.ManualSession(groupId)
+                                    )
+                                }
+                            )
+                        }
+
+                        AppRoute.Ranking -> NavEntry(AppRoute.Ranking) {
+                            RankingPlaceholderScreen()
+                        }
+
+                        AppRoute.Profile -> NavEntry(AppRoute.Profile) {
+                            ProfileScreen()
+                        }
+
+                        is AppRoute.ManualSession -> NavEntry(route) {
+                            ManualSessionScreen(
+                                onBackClick = {
+                                    goBack()
+                                },
+                                onPublished = {
+                                    goBack()
+                                }
+                            )
+                        }
                     }
-                )
-            }
-
-            composable(MainBottomTab.RANKING.route) {
-                RankingPlaceholderScreen()
-            }
-
-            composable(MainBottomTab.PROFILE.route) {
-                ProfileScreen()
-            }
-
-            composable(
-                route = AppRoutes.MANUAL_SESSION_WITH_GROUP
-            ) {
-                ManualSessionScreen(
-                    onBackClick = {
-                        navController.popBackStack()
-                    },
-                    onPublished = {
-                        navController.popBackStack()
-                    }
-                )
-            }
+                }
+            )
         }
     }
 }
