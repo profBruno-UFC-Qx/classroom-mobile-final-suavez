@@ -1,11 +1,11 @@
 package com.example.projectstudy.navigation
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
@@ -13,6 +13,8 @@ import com.example.projectstudy.features.feed.screens.FeedScreen
 import com.example.projectstudy.features.profile.screens.ProfileScreen
 import com.example.projectstudy.features.session.screens.ManualSessionScreen
 import com.example.projectstudy.ui.components.LumioBottomBar
+import androidx.compose.foundation.background
+import androidx.compose.material3.MaterialTheme
 
 @Composable
 fun AppNavigation() {
@@ -34,60 +36,58 @@ fun AppNavigation() {
         }
     }
 
-    Scaffold(
-        bottomBar = {
-            if (showBottomBar) {
-                LumioBottomBar(
-                    currentRoute = currentRoute,
-                    onTabSelected = { tab ->
-                        backStack.clear()
-                        backStack.add(tab.route)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        NavDisplay(
+            backStack = backStack,
+            onBack = {
+                goBack()
+            },
+            entryProvider = { route ->
+                when (route) {
+                    AppRoute.Group -> NavEntry(route) {
+                        FeedScreen(
+                            onAddSessionClick = { groupId ->
+                                backStack.add(
+                                    AppRoute.ManualSession(groupId)
+                                )
+                            }
+                        )
                     }
-                )
-            }
-        }
-    ) { padding ->
 
-        Box(
-            modifier = Modifier.padding(padding)
-        ) {
-            NavDisplay(
-                backStack = backStack,
-                onBack = {
-                    goBack()
-                },
-                entryProvider = { route ->
-                    when (route) {
-                        AppRoute.Group -> NavEntry(AppRoute.Group) {
-                            FeedScreen(
-                                onAddSessionClick = { groupId ->
-                                    backStack.add(
-                                        AppRoute.ManualSession(groupId)
-                                    )
-                                }
-                            )
-                        }
+                    AppRoute.Ranking -> NavEntry(route) {
+                        RankingPlaceholderScreen()
+                    }
 
-                        AppRoute.Ranking -> NavEntry(AppRoute.Ranking) {
-                            RankingPlaceholderScreen()
-                        }
+                    AppRoute.Profile -> NavEntry(route) {
+                        ProfileScreen()
+                    }
 
-                        AppRoute.Profile -> NavEntry(AppRoute.Profile) {
-                            ProfileScreen()
-                        }
-
-                        is AppRoute.ManualSession -> NavEntry(route) {
-                            ManualSessionScreen(
-                                onBackClick = {
-                                    goBack()
-                                },
-                                onPublished = {
-                                    goBack()
-                                }
-                            )
-                        }
+                    is AppRoute.ManualSession -> NavEntry(route) {
+                        ManualSessionScreen(
+                            onBackClick = {
+                                goBack()
+                            },
+                            onPublished = {
+                                goBack()
+                            }
+                        )
                     }
                 }
+            }
+        )
+
+        if (showBottomBar) {
+            LumioBottomBar(
+                currentRoute = currentRoute,
+                onTabSelected = { tab ->
+                    backStack.clear()
+                    backStack.add(tab.route)
+                },
+                modifier = Modifier.align(Alignment.BottomCenter)
             )
         }
     }
