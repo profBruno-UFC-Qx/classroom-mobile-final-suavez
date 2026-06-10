@@ -82,7 +82,8 @@ fun FeedScreen(
                     item {
                         Text(
                             text = "Feed",
-                            style = MaterialTheme.typography.titleLarge
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
 

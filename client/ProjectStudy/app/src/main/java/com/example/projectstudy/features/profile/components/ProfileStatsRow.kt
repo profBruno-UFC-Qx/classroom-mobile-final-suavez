@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.projectstudy.core.util.toDurationText
@@ -29,17 +30,20 @@ fun ProfileStatsRow(
     ) {
         ProfileStatItem(
             value = user.streakDays.toString(),
-            label = "Dias"
+            label = "Dias",
+            valueColor = MaterialTheme.colorScheme.primary
         )
 
         ProfileStatItem(
             value = user.totalMinutes.toDurationText(),
-            label = "Total"
+            label = "Total",
+            valueColor = MaterialTheme.colorScheme.primary
         )
 
         ProfileStatItem(
             value = user.totalActivities.toString(),
-            label = "Sessões"
+            label = "Sessões",
+            valueColor = MaterialTheme.colorScheme.primary
         )
     }
 }
@@ -47,7 +51,8 @@ fun ProfileStatsRow(
 @Composable
 private fun ProfileStatItem(
     value: String,
-    label: String
+    label: String,
+    valueColor: Color = MaterialTheme.colorScheme.onSurface
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -55,7 +60,8 @@ private fun ProfileStatItem(
         Text(
             text = value,
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Black
+            fontWeight = FontWeight.Black,
+            color = valueColor
         )
 
         Text(
