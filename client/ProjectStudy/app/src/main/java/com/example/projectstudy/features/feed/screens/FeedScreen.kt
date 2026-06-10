@@ -127,7 +127,10 @@ fun FeedScreen(
                         },
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
-                            .padding(16.dp),
+                            .padding(
+                                end = 16.dp,
+                                bottom = 116.dp
+                            ),
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ) {

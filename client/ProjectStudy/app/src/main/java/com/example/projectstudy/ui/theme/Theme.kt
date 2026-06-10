@@ -5,6 +5,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 
 private val DarkColorScheme = darkColorScheme(
     primary = PrimaryGreenDark,
@@ -58,6 +62,38 @@ private val LightColorScheme = lightColorScheme(
     onError = BackgroundLight
 )
 
+data class LumioExtraColors(
+    val floatingBar: Color,
+    val floatingBarSelected: Color,
+    val floatingBarBorder: Color,
+    val floatingBarInactive: Color
+)
+
+private val LightLumioExtraColors = LumioExtraColors(
+    floatingBar = FloatingBarLight,
+    floatingBarSelected = FloatingBarSelectedLight,
+    floatingBarBorder = FloatingBarBorderLight,
+    floatingBarInactive = FloatingBarInactiveLight
+)
+
+private val DarkLumioExtraColors = LumioExtraColors(
+    floatingBar = FloatingBarDark,
+    floatingBarSelected = FloatingBarSelectedDark,
+    floatingBarBorder = FloatingBarBorderDark,
+    floatingBarInactive = FloatingBarInactiveDark
+)
+
+private val LocalLumioExtraColors = staticCompositionLocalOf {
+    LightLumioExtraColors
+}
+
+object LumioTheme {
+    val colors: LumioExtraColors
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalLumioExtraColors.current
+}
+
 @Composable
 fun ProjectStudyTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -69,9 +105,19 @@ fun ProjectStudyTheme(
         LightColorScheme
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    val extraColors = if (darkTheme) {
+        DarkLumioExtraColors
+    } else {
+        LightLumioExtraColors
+    }
+
+    CompositionLocalProvider(
+        LocalLumioExtraColors provides extraColors
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }

@@ -43,3 +43,23 @@ val TextMutedDark = Color(0xFF9BAB94)
 val BorderDark = Color(0xFF2E382C)
 
 val ErrorDark = Color(0xFFEF9A9A)
+
+
+// =========================
+// FLOATING BAR
+// =========================
+
+// =========================
+// FLOATING BAR
+// =========================
+
+val FloatingBarLight = Color(0xFFF0F6EA)
+val FloatingBarSelectedLight = Color(0xFFDCECCB)
+val FloatingBarBorderLight = Color(0xFFD6E5C8)
+
+val FloatingBarDark = Color(0xFF1A1F18)
+val FloatingBarSelectedDark = Color(0xFF243519)
+val FloatingBarBorderDark = Color(0xFF313B2E)
+
+val FloatingBarInactiveDark = Color(0xFF8B9986)
+val FloatingBarInactiveLight = Color(0xFF7A8275)

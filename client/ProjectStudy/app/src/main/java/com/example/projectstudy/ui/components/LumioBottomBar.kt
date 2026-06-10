@@ -25,6 +25,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.projectstudy.navigation.AppRoute
 import com.example.projectstudy.navigation.MainBottomTab
+import androidx.compose.foundation.border
+import androidx.compose.ui.graphics.Color
+import com.example.projectstudy.ui.theme.LumioTheme
 
 @Composable
 fun LumioBottomBar(
@@ -32,6 +35,15 @@ fun LumioBottomBar(
     onTabSelected: (MainBottomTab) -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+    val barColor = if (currentRoute != null) {
+        Color(0xFFF0F6EA)
+    } else {
+        MaterialTheme.colorScheme.surface
+    }
+
+    val borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.45f)
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -44,7 +56,12 @@ fun LumioBottomBar(
                 .widthIn(max = 520.dp)
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(42.dp))
-                .background(MaterialTheme.colorScheme.surface)
+                .background(LumioTheme.colors.floatingBar)
+                .border(
+                    width = 1.dp,
+                    color = LumioTheme.colors.floatingBarBorder,
+                    shape = RoundedCornerShape(42.dp)
+                )
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -73,15 +90,15 @@ private fun LumioBottomBarItem(
     modifier: Modifier = Modifier
 ) {
     val itemBackground = if (selected) {
-        MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)
+        LumioTheme.colors.floatingBarSelected
     } else {
-        MaterialTheme.colorScheme.surface
+        Color.Transparent
     }
 
     val contentColor = if (selected) {
         MaterialTheme.colorScheme.primary
     } else {
-        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+        LumioTheme.colors.floatingBarInactive
     }
 
     Column(
