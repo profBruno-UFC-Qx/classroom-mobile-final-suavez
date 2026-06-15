@@ -1,27 +1,35 @@
 package com.example.projectstudy.data.mock
 
-import com.example.projectstudy.domain.model.StudyActivity
 import com.example.projectstudy.data.repository.ActivityRepository
+import com.example.projectstudy.domain.model.StudyActivity
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class FakeActivityRepository @Inject constructor() : ActivityRepository {
 
-    override suspend fun getActivitiesByGroupId(
+    override fun observeActivitiesByGroupId(
         groupId: String
-    ): List<StudyActivity> {
-        delay(1000)
+    ): Flow<List<StudyActivity>> {
+        return flow {
+            delay(500)
 
-        return MockData.getActivitiesByGroupId(groupId)
+            emit(
+                MockData.getActivitiesByGroupId(groupId)
+            )
+        }
     }
 
-    override suspend fun getActivitiesByUserId(
+    override fun observeActivitiesByUserId(
         userId: String
-    ): List<StudyActivity> {
-        delay(500)
+    ): Flow<List<StudyActivity>> {
+        return flow {
+            delay(500)
 
-        return MockData.getActivitiesByUserId(userId)
+            emit(
+                MockData.getActivitiesByUserId(userId)
+            )
+        }
     }
-
-
 }

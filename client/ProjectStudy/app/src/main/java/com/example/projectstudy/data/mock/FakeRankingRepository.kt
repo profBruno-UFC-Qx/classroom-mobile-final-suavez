@@ -1,15 +1,23 @@
 package com.example.projectstudy.data.mock
 
-import com.example.projectstudy.domain.model.RankingEntry
 import com.example.projectstudy.data.repository.RankingRepository
+import com.example.projectstudy.domain.model.RankingEntry
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class FakeRankingRepository @Inject constructor(): RankingRepository {
+class FakeRankingRepository @Inject constructor() : RankingRepository {
 
-    override suspend fun getRankingByGroupId(groupId: String): List<RankingEntry> {
-        delay(500)
+    override fun observeRankingByGroupId(
+        groupId: String
+    ): Flow<List<RankingEntry>> {
+        return flow {
+            delay(500)
 
-        return MockData.getRankingByGroupId(groupId)
+            emit(
+                MockData.getRankingByGroupId(groupId)
+            )
+        }
     }
 }

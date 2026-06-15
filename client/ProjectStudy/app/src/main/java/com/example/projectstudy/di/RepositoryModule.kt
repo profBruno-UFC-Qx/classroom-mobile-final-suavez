@@ -1,5 +1,10 @@
 package com.example.projectstudy.di
 
+import com.example.projectstudy.data.local.repository.LocalActivityRepository
+import com.example.projectstudy.data.local.repository.LocalGroupRepository
+import com.example.projectstudy.data.local.repository.LocalRankingRepository
+import com.example.projectstudy.data.local.repository.LocalSessionRepository
+import com.example.projectstudy.data.local.repository.LocalUserRepository
 import com.example.projectstudy.data.mock.FakeActivityRepository
 import com.example.projectstudy.data.mock.FakeGroupRepository
 import com.example.projectstudy.data.mock.FakeRankingRepository
@@ -23,30 +28,30 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindActivityRepository(
-        repository: FakeActivityRepository
+        repository: LocalActivityRepository
     ): ActivityRepository
 
     @Binds
     @Singleton
     abstract fun bindGroupRepository(
-        repository: FakeGroupRepository
+        repository: LocalGroupRepository
     ): GroupRepository
 
     @Binds
     @Singleton
     abstract fun bindRankingRepository(
-        repository: FakeRankingRepository
+        repository: LocalRankingRepository
     ): RankingRepository
 
     @Binds
     @Singleton
     abstract fun bindUserRepository(
-        repository: FakeUserRepository
+        repository: LocalUserRepository
     ): UserRepository
 
     @Binds
     @Singleton
     abstract fun bindSessionRepository(
-        repository: FakeSessionRepository
+        repository: LocalSessionRepository
     ): SessionRepository
 }
