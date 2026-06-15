@@ -14,7 +14,7 @@ object MockData {
 
     private val now = System.currentTimeMillis()
 
-    val users = listOf(
+    private val users = listOf(
         User(
             id = "user_1",
             name = "Maria Clara",
@@ -139,7 +139,7 @@ object MockData {
     private val larissaAuthor = users[6].toAuthor()
     private val brunoAuthor = users[7].toAuthor()
 
-    val groups = listOf(
+    private val groups = listOf(
         Group(
             id = "group_1",
             name = "Galera da Eng.",
@@ -187,7 +187,7 @@ object MockData {
         )
     )
 
-    val activities = listOf(
+    private val activities = listOf(
         // Hoje - group_1
         StudyActivity(
             id = "activity_1",
@@ -459,7 +459,7 @@ object MockData {
         )
     )
 
-    val rankingGroupOne = listOf(
+    private val rankingGroupOne = listOf(
         RankingEntry(
             groupId = "group_1",
             user = users[0],
@@ -526,7 +526,7 @@ object MockData {
         )
     )
 
-    val rankingGroupTwo = listOf(
+    private val rankingGroupTwo = listOf(
         RankingEntry(
             groupId = "group_2",
             user = users[3],
@@ -561,7 +561,7 @@ object MockData {
         )
     )
 
-    val rankingGroupThree = listOf(
+    private val rankingGroupThree = listOf(
         RankingEntry(
             groupId = "group_3",
             user = users[4],
@@ -625,5 +625,19 @@ object MockData {
 
     fun getFirstUserGroup(): Group {
         return groups.first()
+    }
+
+    fun getUsers(): List<User> {
+        return users
+    }
+
+    fun getUserGroups(): List<Group> {
+        return groups
+    }
+
+    fun getActivities(): List<StudyActivity> {
+        return activities.sortedByDescending { activity ->
+            activity.startedAtMillis
+        }
     }
 }
