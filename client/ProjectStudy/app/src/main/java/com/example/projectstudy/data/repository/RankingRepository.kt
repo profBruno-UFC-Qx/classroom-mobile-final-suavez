@@ -1,10 +1,11 @@
 package com.example.projectstudy.data.repository
 
 import com.example.projectstudy.domain.model.RankingEntry
+import kotlinx.coroutines.flow.Flow
 
 interface RankingRepository {
 
-    suspend fun getRankingByGroupId(
+    fun observeRankingByGroupId(
         groupId: String
-    ): List<RankingEntry>
+    ): Flow<List<RankingEntry>>
 }

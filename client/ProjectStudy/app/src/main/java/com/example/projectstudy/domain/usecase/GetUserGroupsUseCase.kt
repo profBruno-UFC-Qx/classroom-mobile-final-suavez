@@ -3,11 +3,12 @@ package com.example.projectstudy.domain.usecase
 import com.example.projectstudy.domain.model.Group
 import com.example.projectstudy.data.repository.GroupRepository
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 
 class GetUserGroupsUseCase @Inject constructor(
-    private val repository: GroupRepository
+    private val groupRepository: GroupRepository
 ) {
-    suspend operator fun invoke(): List<Group> {
-        return repository.getUserGroups()
+    operator fun invoke(): Flow<List<Group>> {
+        return groupRepository.observeUserGroups()
     }
 }

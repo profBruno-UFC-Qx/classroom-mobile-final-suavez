@@ -34,7 +34,7 @@ data class ManualSessionUiState(
     val published: Boolean = false
 )
 
-private fun currentTimeInMinutes(): Int {
+fun currentTimeInMinutes(): Int {
     val calendar = Calendar.getInstance()
 
     return calendar.get(Calendar.HOUR_OF_DAY) * 60 +

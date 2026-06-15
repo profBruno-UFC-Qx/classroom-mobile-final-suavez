@@ -8,12 +8,14 @@ import com.example.projectstudy.domain.usecase.CreateManualSessionUseCase
 import com.example.projectstudy.domain.usecase.GetUserGroupsUseCase
 import com.example.projectstudy.features.session.state.ManualSessionEvent
 import com.example.projectstudy.features.session.state.ManualSessionUiState
+import com.example.projectstudy.features.session.state.currentTimeInMinutes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlin.math.ceil
+import kotlinx.coroutines.flow.first
+import kotlin.String
 
 @HiltViewModel
 class ManualSessionViewModel @Inject constructor(
@@ -126,7 +128,7 @@ class ManualSessionViewModel @Inject constructor(
             )
 
             try {
-                val groups = getUserGroupsUseCase()
+                val groups = getUserGroupsUseCase().first()
 
                 val selectedIds = when {
                     initialGroupId != null -> {
@@ -201,8 +203,24 @@ class ManualSessionViewModel @Inject constructor(
 
                 _uiState.value = _uiState.value.copy(
                     isPublishing = false,
-                    published = true
+                    published = true,
+                    title = "",
+                    subject = "",
+                    description = "",
+                    dateMillis = System.currentTimeMillis(),
+                    startTimeMinutes = currentTimeInMinutes(),
+                    durationText = "3600",
+                    durationSeconds = 3600,
+                    durationMinutes = 60,
+                    selectedMediaUris = emptyList(),
+                    titleError = null,
+                    subjectError = null,
+                    durationError = null,
+                    mediaError = null,
+                    groupError = null,
+                    error = null
                 )
+
 
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(

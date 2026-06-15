@@ -11,7 +11,7 @@ class CreateManualSessionUseCase @Inject constructor(
 
     suspend operator fun invoke(
         data: CreateManualSessionData
-    ): StudyActivity {
+    ) {
         return repository.createManualSession(data)
     }
 }

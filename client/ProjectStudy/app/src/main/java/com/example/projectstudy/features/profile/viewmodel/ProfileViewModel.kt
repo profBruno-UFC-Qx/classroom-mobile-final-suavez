@@ -7,8 +7,10 @@ import com.example.projectstudy.domain.usecase.GetUserActivitiesUseCase
 import com.example.projectstudy.features.profile.state.ProfileUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @HiltViewModel
@@ -20,12 +22,16 @@ class ProfileViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState = _uiState.asStateFlow()
 
+    private var loadProfileJob: Job? = null
+
     init {
         loadProfile()
     }
 
     fun loadProfile() {
-        viewModelScope.launch {
+        loadProfileJob?.cancel()
+
+        loadProfileJob = viewModelScope.launch {
             _uiState.value = _uiState.value.copy(
                 isLoading = true,
                 error = null
@@ -34,15 +40,20 @@ class ProfileViewModel @Inject constructor(
             try {
                 val user = getCurrentUserUseCase()
 
-                val recentActivities = getUserActivitiesUseCase(
-                    userId = user.id
+                _uiState.value = _uiState.value.copy(
+                    user = user
                 )
 
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    user = user,
-                    recentActivities = recentActivities
-                )
+                getUserActivitiesUseCase(
+                    userId = user.id
+                ).collectLatest { recentActivities ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        user = user,
+                        recentActivities = recentActivities,
+                        error = null
+                    )
+                }
 
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
