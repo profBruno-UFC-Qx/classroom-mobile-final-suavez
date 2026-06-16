@@ -1,29 +1,62 @@
 package com.example.projectstudy.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
+import com.example.projectstudy.features.auth.screens.LoginScreen
+import com.example.projectstudy.features.auth.screens.RegisterScreen
+import com.example.projectstudy.features.auth.viewmodel.AuthSessionViewModel
 import com.example.projectstudy.features.feed.screens.FeedScreen
 import com.example.projectstudy.features.profile.screens.ProfileScreen
 import com.example.projectstudy.features.session.screens.ManualSessionScreen
-import com.example.projectstudy.features.auth.screens.RegisterScreen
-import com.example.projectstudy.features.auth.screens.LoginScreen
 import com.example.projectstudy.ui.components.LumioBottomBar
-import androidx.compose.foundation.background
-import androidx.compose.material3.MaterialTheme
 
 @Composable
 fun AppNavigation() {
+    val authSessionViewModel: AuthSessionViewModel = hiltViewModel()
+    val isLoggedIn by authSessionViewModel.isLoggedIn.collectAsState()
+
     val backStack = remember {
         mutableStateListOf<AppRoute>(
-            AppRoute.Login
+            if (isLoggedIn) {
+                AppRoute.Group
+            } else {
+                AppRoute.Login
+            }
         )
+    }
+
+    LaunchedEffect(isLoggedIn) {
+        val currentRoute = backStack.lastOrNull()
+
+        if (
+            isLoggedIn &&
+            (currentRoute == AppRoute.Login || currentRoute == AppRoute.Register)
+        ) {
+            backStack.clear()
+            backStack.add(AppRoute.Group)
+        }
+
+        if (
+            !isLoggedIn &&
+            currentRoute != AppRoute.Login &&
+            currentRoute != AppRoute.Register
+        ) {
+            backStack.clear()
+            backStack.add(AppRoute.Login)
+        }
     }
 
     val currentRoute = backStack.lastOrNull()

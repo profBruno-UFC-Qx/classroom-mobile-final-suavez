@@ -2,17 +2,19 @@ package com.example.projectstudy.features.auth.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.projectstudy.data.repository.AuthRepository
 import com.example.projectstudy.features.auth.state.LoginEvent
 import com.example.projectstudy.features.auth.state.LoginUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class LoginViewModel @Inject constructor() : ViewModel() {
+class LoginViewModel @Inject constructor(
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState = _uiState.asStateFlow()
@@ -58,7 +60,7 @@ class LoginViewModel @Inject constructor() : ViewModel() {
                 error = null
             )
 
-            delay(500)
+            authRepository.setLoggedIn(true)
 
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
