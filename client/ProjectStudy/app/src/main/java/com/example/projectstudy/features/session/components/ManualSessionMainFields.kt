@@ -1,12 +1,12 @@
 package com.example.projectstudy.features.session.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.projectstudy.features.session.state.ManualSessionEvent
 import com.example.projectstudy.features.session.state.ManualSessionUiState
+import com.example.projectstudy.ui.components.LumioTextField
+import com.example.projectstudy.ui.components.LumioTextFieldStyle
 
 @Composable
 fun ManualSessionMainFields(
@@ -14,7 +14,7 @@ fun ManualSessionMainFields(
     onEvent: (ManualSessionEvent) -> Unit
 ) {
     ManualSessionSection{
-        ManualSessionTextField(
+        LumioTextField(
             value = uiState.title,
             onValueChange = { value ->
                 onEvent(ManualSessionEvent.TitleChanged(value))
@@ -23,17 +23,20 @@ fun ManualSessionMainFields(
             label = "Título",
             isError = uiState.titleError != null,
             errorMessage = uiState.titleError,
-            singleLine = true
+            singleLine = true,
+            style = LumioTextFieldStyle.Embedded
         )
 
-        ManualSessionTextField(
+        LumioTextField(
             value = uiState.description,
             onValueChange = { value ->
                 onEvent(ManualSessionEvent.DescriptionChanged(value))
             },
             modifier = Modifier.fillMaxWidth(),
             label = "Descrição opcional",
-            minLines = 4
+            minLines = 4,
+            style = LumioTextFieldStyle.Embedded
+
         )
     }
 }

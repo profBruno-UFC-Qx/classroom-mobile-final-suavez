@@ -20,10 +20,17 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import com.example.projectstudy.data.local.repository.LocalAuthRepository
+import com.example.projectstudy.data.repository.AuthRepository
 
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
+
+    @Binds
+    abstract fun bindAuthRepository(
+        repository: LocalAuthRepository
+    ): AuthRepository
 
     @Binds
     @Singleton

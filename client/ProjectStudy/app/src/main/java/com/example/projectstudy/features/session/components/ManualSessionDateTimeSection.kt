@@ -1,20 +1,17 @@
 package com.example.projectstudy.features.session.components
 
-import android.media.MediaDrm
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.projectstudy.core.util.getEstimatedEndTimeText
 import com.example.projectstudy.core.util.toFeedDateLabel
 import com.example.projectstudy.core.util.toTimeText
 import com.example.projectstudy.features.session.state.ManualSessionEvent
 import com.example.projectstudy.features.session.state.ManualSessionUiState
+import com.example.projectstudy.ui.components.LumioTextField
+import com.example.projectstudy.ui.components.LumioTextFieldStyle
 
 @Composable
 fun ManualSessionDateTimeSection(
@@ -24,7 +21,7 @@ fun ManualSessionDateTimeSection(
     onStartTimeClick: () -> Unit
 ) {
     ManualSessionSection {
-        ManualSessionTextField(
+        LumioTextField(
             value = uiState.subject,
             onValueChange = { value ->
                 onEvent(ManualSessionEvent.SubjectChanged(value))
@@ -33,7 +30,8 @@ fun ManualSessionDateTimeSection(
             label = "Matéria",
             isError = uiState.subjectError != null,
             errorMessage = uiState.subjectError,
-            singleLine = true
+            singleLine = true,
+            style = LumioTextFieldStyle.Embedded
         )
 
         Row(
