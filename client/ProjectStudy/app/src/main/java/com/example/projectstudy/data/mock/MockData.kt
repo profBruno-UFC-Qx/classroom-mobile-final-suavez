@@ -8,7 +8,6 @@ import com.example.projectstudy.domain.model.StudyActivity
 import com.example.projectstudy.domain.model.User
 
 object MockData {
-
     private const val ONE_HOUR = 60 * 60 * 1000L
     private const val ONE_DAY = 24 * ONE_HOUR
 

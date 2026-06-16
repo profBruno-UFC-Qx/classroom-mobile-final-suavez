@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class FakeRankingRepository @Inject constructor() : RankingRepository {
-
     override fun observeRankingByGroupId(
         groupId: String
     ): Flow<List<RankingEntry>> {

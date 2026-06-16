@@ -23,10 +23,10 @@ import com.example.projectstudy.ui.util.toAvatarColor
 fun LumioAvatar(
     initials: String,
     avatarUrl: String,
-    colorKey: String = initials,
     modifier: Modifier = Modifier,
     size: Dp = 40.dp,
-    textStyle: TextStyle = MaterialTheme.typography.labelMedium
+    textStyle: TextStyle = MaterialTheme.typography.labelMedium,
+    colorKey: String = initials
 ) {
     if (avatarUrl.isNotBlank()) {
         AsyncImage(
@@ -37,20 +37,22 @@ fun LumioAvatar(
                 .clip(CircleShape),
             contentScale = ContentScale.Crop
         )
-    } else {
-        Box(
-            modifier = modifier
-                .size(size)
-                .clip(CircleShape)
-                .background(colorKey.toAvatarColor()),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = initials,
-                color = Color.White,
-                style = textStyle,
-                fontWeight = FontWeight.Bold
-            )
-        }
+
+        return
+    }
+
+    Box(
+        modifier = modifier
+            .size(size)
+            .clip(CircleShape)
+            .background(colorKey.toAvatarColor()),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = initials,
+            color = Color.White,
+            style = textStyle,
+            fontWeight = FontWeight.Bold
+        )
     }
 }
