@@ -19,6 +19,20 @@ import java.time.ZoneOffset
 import java.util.UUID
 import javax.inject.Inject
 
+/**
+ * Implementação local do repositório de sessões de estudo.
+ *
+ * Essa classe é responsável por salvar sessões manuais diretamente no banco local.
+ * Como o app segue uma abordagem offline-first, a sessão é registrada primeiro
+ * no Room e marcada como pendente de sincronização.
+ *
+ * Ao criar uma sessão manual, este repositório também atualiza os dados derivados:
+ * - salva a atividade de estudo;
+ * - associa a atividade aos grupos selecionados;
+ * - salva as mídias anexadas;
+ * - atualiza o ranking dos grupos;
+ * - atualiza o progresso dos grupos.
+ */
 class LocalSessionRepository @Inject constructor(
     private val studyActivityDao: StudyActivityDao,
     private val rankingDao: RankingDao,
@@ -26,6 +40,18 @@ class LocalSessionRepository @Inject constructor(
     private val groupDao: GroupDao
 ) : SessionRepository {
 
+    /**
+     * Cria uma sessão manual de estudo no banco local.
+     *
+     * A sessão é salva como uma [StudyActivity] e marcada com:
+     * - `isSynced = false`, indicando que ainda não foi sincronizada com API;
+     * - `pendingSyncAction = "CREATE"`, indicando que a ação futura será criação remota.
+     *
+     * Após salvar a atividade, o método atualiza os vínculos com grupos, mídias,
+     * ranking e progresso dos grupos afetados.
+     *
+     * @param data Dados preenchidos pelo usuário na tela de sessão manual.
+     */
     override suspend fun createManualSession(
         data: CreateManualSessionData
     ) {
@@ -96,6 +122,24 @@ class LocalSessionRepository @Inject constructor(
         )
     }
 
+    /**
+     * Atualiza o ranking dos grupos após a criação de uma sessão.
+     *
+     * Para cada grupo selecionado, o método:
+     * - busca o ranking atual;
+     * - soma os minutos da nova sessão ao usuário atual;
+     * - incrementa a quantidade de dias ativos;
+     * - adiciona o usuário ao ranking caso ele ainda não exista;
+     * - recalcula as posições com base em minutos totais e dias ativos.
+     *
+     * A posição do ranking é calculada em ordem decrescente de:
+     * 1. total de minutos estudados;
+     * 2. quantidade de dias ativos.
+     *
+     * @param groupIds Grupos que receberam a nova sessão.
+     * @param userId Usuário responsável pela sessão.
+     * @param durationMinutes Duração da sessão em minutos.
+     */
     private suspend fun updateRankingAfterSession(
         groupIds: List<String>,
         userId: String,
@@ -126,8 +170,14 @@ class LocalSessionRepository @Inject constructor(
                 }
             }.toMutableList()
 
-
-            //ainda não tem login, por isso fiz isso aqui Myka :)
+            /**
+             * Enquanto a autenticação real ainda não está integrada ao backend,
+             * o app usa um usuário local padrão.
+             *
+             * Caso esse usuário ainda não exista no ranking do grupo, ele é
+             * inserido com os dados disponíveis no banco local ou com valores
+             * padrão temporários.
+             */
             if (!userAlreadyInRanking) {
                 rankingWithUpdatedUser.add(
                     RankingEntryEntity(
@@ -170,10 +220,19 @@ class LocalSessionRepository @Inject constructor(
                 }
 
             rankingDao.upsertRanking(updatedRanking)
-
         }
     }
 
+    /**
+     * Combina a data escolhida pelo usuário com o horário inicial da sessão.
+     *
+     * A data recebida vem como timestamp em milissegundos. Ela é convertida para
+     * uma data local, e o horário selecionado é aplicado sobre essa data.
+     *
+     * @param dateMillis Data selecionada pelo usuário em milissegundos.
+     * @param startTimeMinutes Horário inicial representado em minutos desde 00:00.
+     * @return Timestamp final da data e horário de início da sessão.
+     */
     private fun buildStartedAtMillis(
         dateMillis: Long,
         startTimeMinutes: Int
@@ -197,6 +256,15 @@ class LocalSessionRepository @Inject constructor(
             .toEpochMilli()
     }
 
+    /**
+     * Atualiza o progresso dos grupos após uma nova sessão.
+     *
+     * Para cada grupo afetado, os minutos da sessão são somados ao progresso
+     * geral do grupo e também ao progresso individual do usuário dentro dele.
+     *
+     * @param groupIds Grupos que receberam a nova sessão.
+     * @param durationMinutes Duração da sessão em minutos.
+     */
     private suspend fun updateGroupProgressAfterSession(
         groupIds: List<String>,
         durationMinutes: Int
