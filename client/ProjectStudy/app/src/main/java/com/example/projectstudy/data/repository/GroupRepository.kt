@@ -4,7 +4,6 @@ import com.example.projectstudy.domain.model.Group
 import kotlinx.coroutines.flow.Flow
 
 interface GroupRepository {
-
     fun observeFirstUserGroup(): Flow<Group>
 
     fun observeUserGroups(): Flow<List<Group>>

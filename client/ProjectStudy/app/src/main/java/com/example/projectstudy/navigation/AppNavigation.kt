@@ -14,14 +14,15 @@ import com.example.projectstudy.features.profile.screens.ProfileScreen
 import com.example.projectstudy.features.session.screens.ManualSessionScreen
 import com.example.projectstudy.ui.components.LumioBottomBar
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 
 @Composable
 fun AppNavigation() {
     val backStack = remember {
-        mutableStateListOf<AppRoute>(
-            AppRoute.Group
-        )
+        mutableStateListOf<AppRoute>(AppRoute.Group)
     }
 
     val currentRoute = backStack.lastOrNull()
@@ -36,58 +37,57 @@ fun AppNavigation() {
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        NavDisplay(
-            backStack = backStack,
-            onBack = {
-                goBack()
-            },
-            entryProvider = { route ->
-                when (route) {
-                    AppRoute.Group -> NavEntry(route) {
-                        FeedScreen(
-                            onAddSessionClick = { groupId ->
-                                backStack.add(
-                                    AppRoute.ManualSession(groupId)
-                                )
-                            }
-                        )
-                    }
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        bottomBar = {
+            if (showBottomBar) {
+                LumioBottomBar(
+                    currentRoute = currentRoute,
+                    onTabSelected = { tab ->
+                        if (currentRoute == tab.route) return@LumioBottomBar
 
-                    AppRoute.Ranking -> NavEntry(route) {
-                        RankingPlaceholderScreen()
-                    }
+                        backStack.removeAll { it != AppRoute.Group }
 
-                    AppRoute.Profile -> NavEntry(route) {
-                        ProfileScreen()
+                        if (tab.route != AppRoute.Group) {
+                            backStack.add(tab.route)
+                        }
                     }
+                )
+            }
+        }
+    ) { innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)) {
+            NavDisplay(
+                backStack = backStack,
+                onBack = { goBack() },
+                entryProvider = { route ->
+                    when (route) {
+                        AppRoute.Group -> NavEntry(route) {
+                            FeedScreen(
+                                onAddSessionClick = { groupId ->
+                                    backStack.add(AppRoute.ManualSession(groupId))
+                                }
+                            )
+                        }
 
-                    is AppRoute.ManualSession -> NavEntry(route) {
-                        ManualSessionScreen(
-                            onBackClick = {
-                                goBack()
-                            },
-                            onPublished = {
-                                goBack()
-                            }
-                        )
+                        AppRoute.Ranking -> NavEntry(route) {
+                            RankingPlaceholderScreen()
+                        }
+
+                        AppRoute.Profile -> NavEntry(route) {
+                            ProfileScreen()
+                        }
+
+                        is AppRoute.ManualSession -> NavEntry(route) {
+                            ManualSessionScreen(
+                                onBackClick = { goBack() },
+                                onPublished = { goBack() }
+                            )
+                        }
                     }
                 }
-            }
-        )
-
-        if (showBottomBar) {
-            LumioBottomBar(
-                currentRoute = currentRoute,
-                onTabSelected = { tab ->
-                    backStack.clear()
-                    backStack.add(tab.route)
-                },
-                modifier = Modifier.align(Alignment.BottomCenter)
             )
         }
     }

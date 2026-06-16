@@ -1,5 +1,6 @@
 package com.example.projectstudy.ui.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +27,9 @@ import androidx.compose.ui.unit.dp
 import com.example.projectstudy.navigation.AppRoute
 import com.example.projectstudy.navigation.MainBottomTab
 import androidx.compose.foundation.border
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.semantics
 import com.example.projectstudy.ui.theme.LumioTheme
 
 @Composable
@@ -35,15 +38,6 @@ fun LumioBottomBar(
     onTabSelected: (MainBottomTab) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
-    val barColor = if (currentRoute != null) {
-        Color(0xFFF0F6EA)
-    } else {
-        MaterialTheme.colorScheme.surface
-    }
-
-    val borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.45f)
-
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -89,33 +83,30 @@ private fun LumioBottomBarItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val itemBackground = if (selected) {
-        LumioTheme.colors.floatingBarSelected
-    } else {
-        Color.Transparent
-    }
+    val itemBackground by animateColorAsState(
+        targetValue = if (selected) LumioTheme.colors.floatingBarSelected else Color.Transparent,
+        label = "bg_color_anim"
+    )
 
-    val contentColor = if (selected) {
-        MaterialTheme.colorScheme.primary
-    } else {
-        LumioTheme.colors.floatingBarInactive
-    }
+    val contentColor by animateColorAsState(
+        targetValue = if (selected) MaterialTheme.colorScheme.primary else LumioTheme.colors.floatingBarInactive,
+        label = "content_color_anim"
+    )
 
     Column(
         modifier = modifier
             .height(56.dp)
             .clip(RoundedCornerShape(34.dp))
             .background(itemBackground)
-            .clickable {
-                onClick()
-            }
-            .padding(vertical = 7.dp),
+            .clickable { onClick() }
+            .padding(vertical = 7.dp)
+            .semantics(mergeDescendants = true) { },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Icon(
             imageVector = icon,
-            contentDescription = label,
+            contentDescription = null,
             modifier = Modifier.size(19.dp),
             tint = contentColor
         )
@@ -124,11 +115,7 @@ private fun LumioBottomBarItem(
             text = label,
             style = MaterialTheme.typography.labelMedium,
             color = contentColor,
-            fontWeight = if (selected) {
-                FontWeight.Bold
-            } else {
-                FontWeight.Medium
-            }
+            fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium
         )
     }
 }

@@ -24,8 +24,8 @@ import com.example.projectstudy.ui.util.toAvatarColor
 fun LumioAvatar(
     initials: String,
     avatarUrl: String,
-    colorKey: String = initials,
     modifier: Modifier = Modifier,
+    colorKey: String = initials,
     size: Dp = 40.dp
 ) {
     if (avatarUrl.isNotBlank()) {
@@ -37,20 +37,22 @@ fun LumioAvatar(
                 .clip(CircleShape),
             contentScale = ContentScale.Crop
         )
-    } else {
-        Box(
-            modifier = modifier
-                .size(size)
-                .clip(CircleShape)
-                .background(colorKey.toAvatarColor()),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = initials,
-                color = Color.White,
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold
-            )
-        }
+
+        return
+    }
+
+    Box(
+        modifier = modifier
+            .size(size)
+            .clip(CircleShape)
+            .background(colorKey.toAvatarColor()),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = initials,
+            color = Color.White,
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.Bold
+        )
     }
 }
