@@ -28,8 +28,10 @@ import com.example.projectstudy.features.feed.components.GroupBanner
 import com.example.projectstudy.features.feed.components.RankingSummaryCard
 import com.example.projectstudy.features.feed.viewmodel.FeedViewModel
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.Scaffold
 
 @Composable
 fun FeedScreen(
@@ -38,99 +40,17 @@ fun FeedScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        when {
-            uiState.isLoading -> {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
-
-            uiState.error != null -> {
-                Text(
-                    text = uiState.error ?: "Erro ao carregar feed",
-                    modifier = Modifier.align(Alignment.Center),
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
-
-            else -> {
-                val groupedActivities = uiState.activities
-                    .sortedByDescending { activity ->
-                        activity.startedAtMillis
-                    }
-                    .groupBy { activity ->
-                        activity.startedAtMillis.toFeedDateLabel()
-                    }
-
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .statusBarsPadding(),
-                    contentPadding = PaddingValues(
-                        start = 16.dp,
-                        top = 12.dp,
-                        end = 16.dp,
-                        bottom = 130.dp
-                    ),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    item {
-                        Text(
-                            text = "Feed",
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-
-                    uiState.group?.let { group ->
-                        item {
-                            GroupBanner(
-                                group = group
-                            )
-                        }
-
-                        item {
-                            RankingSummaryCard(
-                                group = group,
-                                ranking = uiState.ranking
-                            )
-                        }
-                    }
-
-                    groupedActivities.forEach { (dateLabel, activities) ->
-                        item {
-                            FeedDateHeader(
-                                label = dateLabel
-                            )
-                        }
-
-                        items(
-                            items = activities,
-                            key = { activity -> activity.id }
-                        ) { activity ->
-                            ActivityCard(
-                                activity = activity
-                            )
-                        }
-                    }
-                }
-
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        floatingActionButton = {
+            if (!uiState.isLoading && uiState.error == null) {
                 uiState.group?.let { group ->
                     FloatingActionButton(
                         onClick = {
                             onAddSessionClick(group.id)
                         },
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(
-                                end = 16.dp,
-                                bottom = 116.dp
-                            ),
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ) {
@@ -138,6 +58,86 @@ fun FeedScreen(
                             imageVector = Icons.Outlined.Add,
                             contentDescription = "Adicionar sessão"
                         )
+                    }
+                }
+            }
+        }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            when {
+                uiState.isLoading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+
+                uiState.error != null -> {
+                    Text(
+                        text = uiState.error ?: "Erro ao carregar feed",
+                        modifier = Modifier.align(Alignment.Center),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+
+                else -> {
+                    val groupedActivities = uiState.activities
+                        .sortedByDescending { activity ->
+                            activity.startedAtMillis
+                        }
+                        .groupBy { activity ->
+                            activity.startedAtMillis.toFeedDateLabel()
+                        }
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .statusBarsPadding(),
+
+                        contentPadding = PaddingValues(
+                            start = 16.dp,
+                            top = 12.dp,
+                            end = 16.dp,
+                            bottom = 80.dp
+                        ),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        item {
+                            Text(
+                                text = "Feed",
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+
+                        uiState.group?.let { group ->
+                            item {
+                                GroupBanner(group = group)
+                            }
+
+                            item {
+                                RankingSummaryCard(
+                                    group = group,
+                                    ranking = uiState.ranking
+                                )
+                            }
+                        }
+
+                        groupedActivities.forEach { (dateLabel, activities) ->
+                            item {
+                                FeedDateHeader(label = dateLabel)
+                            }
+
+                            items(
+                                items = activities,
+                                key = { activity -> activity.id }
+                            ) { activity ->
+                                ActivityCard(activity = activity)
+                            }
+                        }
                     }
                 }
             }
