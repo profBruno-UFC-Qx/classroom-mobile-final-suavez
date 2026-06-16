@@ -26,7 +26,6 @@ import com.example.projectstudy.data.repository.AuthRepository
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
-
     @Binds
     abstract fun bindAuthRepository(
         repository: LocalAuthRepository

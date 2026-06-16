@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface RankingDao {
-
     @Query(
         """
         SELECT * FROM ranking_entries

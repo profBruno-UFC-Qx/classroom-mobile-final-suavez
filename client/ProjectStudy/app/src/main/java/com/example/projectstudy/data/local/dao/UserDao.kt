@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
-
     @Query("SELECT * FROM users WHERE id = :userId LIMIT 1")
     fun observeUserById(userId: String): Flow<UserEntity?>
 

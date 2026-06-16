@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class FakeActivityRepository @Inject constructor() : ActivityRepository {
-
     override fun observeActivitiesByGroupId(
         groupId: String
     ): Flow<List<StudyActivity>> {

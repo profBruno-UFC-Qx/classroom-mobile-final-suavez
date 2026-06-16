@@ -6,7 +6,6 @@ import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 class FakeSessionRepository @Inject constructor() : SessionRepository {
-
     override suspend fun createManualSession(
         data: CreateManualSessionData
     ) {

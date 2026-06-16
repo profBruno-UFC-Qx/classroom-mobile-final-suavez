@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class FakeGroupRepository @Inject constructor() : GroupRepository {
-
     override fun observeFirstUserGroup(): Flow<Group> {
         return flow {
             delay(500)
