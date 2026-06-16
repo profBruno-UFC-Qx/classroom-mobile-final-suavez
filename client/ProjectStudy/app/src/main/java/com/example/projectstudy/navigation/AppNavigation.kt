@@ -22,6 +22,7 @@ import com.example.projectstudy.features.feed.screens.FeedScreen
 import com.example.projectstudy.features.profile.screens.ProfileScreen
 import com.example.projectstudy.features.session.screens.ManualSessionScreen
 import com.example.projectstudy.ui.components.LumioBottomBar
+import com.example.projectstudy.features.ranking.screens.RankingScreen
 
 @Composable
 fun AppNavigation() {
@@ -119,7 +120,7 @@ fun AppNavigation() {
                     }
 
                     AppRoute.Ranking -> NavEntry(route) {
-                        RankingPlaceholderScreen()
+                        RankingScreen()
                     }
 
                     AppRoute.Profile -> NavEntry(route) {
