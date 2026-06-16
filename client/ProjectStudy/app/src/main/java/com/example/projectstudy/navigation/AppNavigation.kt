@@ -12,6 +12,8 @@ import androidx.navigation3.ui.NavDisplay
 import com.example.projectstudy.features.feed.screens.FeedScreen
 import com.example.projectstudy.features.profile.screens.ProfileScreen
 import com.example.projectstudy.features.session.screens.ManualSessionScreen
+import com.example.projectstudy.features.auth.screens.RegisterScreen
+import com.example.projectstudy.features.auth.screens.LoginScreen
 import com.example.projectstudy.ui.components.LumioBottomBar
 import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
@@ -20,7 +22,7 @@ import androidx.compose.material3.MaterialTheme
 fun AppNavigation() {
     val backStack = remember {
         mutableStateListOf<AppRoute>(
-            AppRoute.Group
+            AppRoute.Login
         )
     }
 
@@ -48,6 +50,31 @@ fun AppNavigation() {
             },
             entryProvider = { route ->
                 when (route) {
+                    AppRoute.Login -> NavEntry(route) {
+                        LoginScreen(
+                            onLoginSuccess = {
+                                backStack.clear()
+                                backStack.add(AppRoute.Group)
+                            },
+                            onRegisterClick = {
+                                backStack.add(AppRoute.Register)
+                            }
+                        )
+                    }
+
+                    AppRoute.Register -> NavEntry(route) {
+                        RegisterScreen(
+                            onRegisterSuccess = {
+                                backStack.clear()
+                                backStack.add(AppRoute.Group)
+                            },
+                            onLoginClick = {
+                                backStack.clear()
+                                backStack.add(AppRoute.Login)
+                            }
+                        )
+                    }
+
                     AppRoute.Group -> NavEntry(route) {
                         FeedScreen(
                             onAddSessionClick = { groupId ->
