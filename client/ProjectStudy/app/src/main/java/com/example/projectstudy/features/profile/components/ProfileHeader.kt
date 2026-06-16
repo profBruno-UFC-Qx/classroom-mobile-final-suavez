@@ -53,7 +53,8 @@ fun ProfileHeader(
             initials = user.avatarInitials,
             avatarUrl = user.avatarUrl,
             colorKey = user.id,
-            size = 78.dp
+            size = 78.dp,
+            textStyle = MaterialTheme.typography.titleMedium
         )
 
         Spacer(modifier = Modifier.height(10.dp))

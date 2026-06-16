@@ -41,7 +41,21 @@ fun Long.toHourText(): String {
     return formatter.format(Date(this))
 }
 
+fun Int.toHourMinuteText(): String {
+    val totalMinutes = this.coerceAtLeast(0)
+
+    val hours = totalMinutes / 60
+    val minutes = totalMinutes % 60
+
+    return if (hours > 0) {
+        "${hours}h${minutes.toString().padStart(2, '0')}"
+    } else {
+        "${minutes}min"
+    }
+}
+
 private fun Calendar.isSameDay(other: Calendar): Boolean {
     return get(Calendar.YEAR) == other.get(Calendar.YEAR) &&
             get(Calendar.DAY_OF_YEAR) == other.get(Calendar.DAY_OF_YEAR)
 }
+
