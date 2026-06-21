@@ -6,6 +6,7 @@ router = APIRouter(
     tags=["health"],
 )
 
+
 @router.get("")
 async def check_health():
     return {"status": "ok"}

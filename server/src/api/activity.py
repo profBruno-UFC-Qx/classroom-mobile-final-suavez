@@ -12,16 +12,25 @@ from src.security import get_current_user
 router = APIRouter(
     prefix="/activity",
     tags=["activity"],
-    dependencies=[Depends(get_current_user)]
+    dependencies=[Depends(get_current_user)],
 )
 
+
 @router.post("", response_model=StudyActivity, status_code=201)
-async def publish_activity(activity: StudyActivity, db: Session = Depends(get_db)):
-    db_activity = db.query(DBStudyActivity).filter(DBStudyActivity.id == activity.id).first()
-    
+async def publish_activity(
+    activity: StudyActivity, db: Session = Depends(get_db)
+):
+    db_activity = (
+        db.query(DBStudyActivity)
+        .filter(DBStudyActivity.id == activity.id)
+        .first()
+    )
+
     if db_activity:
-        raise HTTPException(status_code=400, detail="Atividade já existente")
-    
+        raise HTTPException(
+            status_code=400, detail="Atividade já existente"
+        )
+
     new_activity = DBStudyActivity(
         id=activity.id,
         title=activity.title,
@@ -40,13 +49,13 @@ async def publish_activity(activity: StudyActivity, db: Session = Depends(get_db
         author_avatar_url=activity.author.avatar_url,
         group_ids=activity.group_ids,
         media_uris=activity.media_uris,
-        reactions=activity.reactions
+        reactions=activity.reactions,
     )
-    
+
     db.add(new_activity)
     db.commit()
     db.refresh(new_activity)
-    
+
     return StudyActivity(
         id=new_activity.id,
         group_ids=new_activity.group_ids,
@@ -54,7 +63,7 @@ async def publish_activity(activity: StudyActivity, db: Session = Depends(get_db
             id=new_activity.author_id,
             name=new_activity.author_name,
             avatar_initials=new_activity.author_avatar_initials,
-            avatar_url=new_activity.author_avatar_url
+            avatar_url=new_activity.author_avatar_url,
         ),
         title=new_activity.title,
         subject=new_activity.subject,
@@ -66,5 +75,5 @@ async def publish_activity(activity: StudyActivity, db: Session = Depends(get_db
         started_at_millis=new_activity.started_at_millis,
         ended_at_millis=new_activity.ended_at_millis,
         created_at_millis=new_activity.created_at_millis,
-        is_manual=new_activity.is_manual
+        is_manual=new_activity.is_manual,
     )

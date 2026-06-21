@@ -4,6 +4,7 @@ from src.schemas.activity import StudyActivity
 from src.schemas.base import BaseSchema
 from src.schemas.group import Group
 
+
 # talvez devesse ficar em activity.py, mas como eu tava separando do mesmo jeito das rotas, deixei aqui mesmo pra num misturar as coisas
 class SyncActivityRequest(BaseSchema):
     id: str

@@ -6,8 +6,10 @@ from src.database import Base
 
 class DBStudyActivity(Base):
     __tablename__ = "study_activities"
-    
-    id: Mapped[str] = mapped_column(String, primary_key=True, index=True)
+
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, index=True
+    )
     title: Mapped[str] = mapped_column(String)
     subject: Mapped[str] = mapped_column(String)
     description: Mapped[str] = mapped_column(String)

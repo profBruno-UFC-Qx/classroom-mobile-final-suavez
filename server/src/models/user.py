@@ -6,8 +6,10 @@ from src.database import Base
 
 class DBUser(Base):
     __tablename__ = "users"
-    
-    id: Mapped[str] = mapped_column(String, primary_key=True, index=True)
+
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, index=True
+    )
     name: Mapped[str] = mapped_column(String)
     username: Mapped[str] = mapped_column(String)
     email: Mapped[str] = mapped_column(String, default="")

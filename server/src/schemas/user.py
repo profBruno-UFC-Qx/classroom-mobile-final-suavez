@@ -36,6 +36,7 @@ class ActivityAuthor(BaseSchema):
     avatar_initials: str
     avatar_url: str = ""
 
+
 class RankingEntry(BaseSchema):
     group_id: str
     user: User
