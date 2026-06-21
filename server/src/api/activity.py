@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 
 from src.database import get_db
 from src.models.activity import DBStudyActivity
-from src.models.activity import DBStudyActivity
 from src.schemas.activity import StudyActivity
 from src.schemas.user import ActivityAuthor
 from src.security import get_current_user
