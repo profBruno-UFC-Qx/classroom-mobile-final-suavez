@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from loguru import logger
 from sqlalchemy.orm import Session
 
@@ -16,7 +16,7 @@ router = APIRouter(
 )
 
 
-@router.post("", response_model=StudyActivity, status_code=201)
+@router.post("", response_model=StudyActivity, status_code=status.HTTP_201_CREATED)
 async def publish_activity(
     activity: StudyActivity, db: Session = Depends(get_db)
 ):
@@ -28,7 +28,7 @@ async def publish_activity(
 
     if db_activity:
         raise HTTPException(
-            status_code=400, detail="Atividade já existente"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Atividade já existente"
         )
 
     new_activity = DBStudyActivity(

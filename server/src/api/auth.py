@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import HTTPException, APIRouter, Depends
+from fastapi import HTTPException, APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from loguru import logger
 from sqlalchemy.orm import Session
@@ -21,7 +21,7 @@ router = APIRouter(
 )
 
 
-@router.post("/register", response_model=User, status_code=201)
+@router.post("/register", response_model=User, status_code=status.HTTP_201_CREATED)
 async def register_user(
     user_in: UserRegister, db: Session = Depends(get_db)
 ):
@@ -37,7 +37,7 @@ async def register_user(
     if user_exists:
         raise HTTPException(
             status_code=400,
-            detail="Email ou nome de utilizador já registado no sistema.",
+            detail="Email ou nome de usuário já registado no sistema.",
         )
 
     user_id = f"usr_{uuid.uuid4().hex[:8]}"

@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from loguru import logger
 from sqlalchemy.orm import Session
 
@@ -20,13 +20,13 @@ router = APIRouter(
 )
 
 
-@router.post("", response_model=User, status_code=201)
+@router.post("", response_model=User, status_code=status.HTTP_201_CREATED)
 async def create_user(user: User, db: Session = Depends(get_db)):
     db_user = db.query(DBUser).filter(DBUser.id == user.id).first()
 
     if db_user:
         raise HTTPException(
-            status_code=400, detail="Usuário já cadastrado"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Usuário já cadastrado"
         )
 
     new_user = DBUser(**user.model_dump())
@@ -42,7 +42,7 @@ async def get_user(user_id: str, db: Session = Depends(get_db)):
     db_user = db.query(DBUser).filter(DBUser.id == user_id).first()
     if not db_user:
         raise HTTPException(
-            status_code=404, detail="Usuário não encontrado"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Usuário não encontrado"
         )
 
     return db_user
@@ -53,8 +53,8 @@ async def get_user_groups(
     user_id: str, db: Session = Depends(get_db)
 ):
     all_groups = db.query(DBGroup).all()
-
-    return all_groups
+    
+    return [g for g in all_groups if user_id in (g.member_ids or [])]
 
 
 @router.get(

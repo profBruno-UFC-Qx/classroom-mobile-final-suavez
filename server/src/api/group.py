@@ -29,7 +29,7 @@ async def create_group(group: Group, db: Session = Depends(get_db)):
     )
     if db_group:
         raise HTTPException(
-            status_code=400, detail="Grupo já cadastrado"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Grupo já cadastrado"
         )
 
     new_group = DBGroup(**group.model_dump())
@@ -110,7 +110,7 @@ async def join_group(
 
     if not group:
         raise HTTPException(
-            status_code=404,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail="Código de convite inválido ou grupo não encontrado.",
         )
 
@@ -119,7 +119,7 @@ async def join_group(
     if current_user.id in members:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="O utilizador já pertence a este grupo.",
+            detail="O usuario já pertence a este grupo.",
         )
 
     members.append(current_user.id)
