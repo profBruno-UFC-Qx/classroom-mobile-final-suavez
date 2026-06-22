@@ -1,5 +1,7 @@
 from typing import List
 
+from pydantic import Field
+
 from src.schemas.activity import StudyActivity
 from src.schemas.base import BaseSchema
 from src.schemas.group import Group
