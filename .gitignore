@@ -1,1 +1,3 @@
 .venv/
+server/.env
+server/project_study.db
