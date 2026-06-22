@@ -14,7 +14,10 @@ class SyncActivityRequest(BaseSchema):
     description: str
     duration_minutes: int
     duration_seconds: int
-    image_url: str
+    image_url: str = ""
+    group_ids: List[str] = Field(default_factory=list)
+    media_uris: List[str] = Field(default_factory=list)
+    reactions: int = 0
     started_at_millis: int
     ended_at_millis: int
     created_at_millis: int
