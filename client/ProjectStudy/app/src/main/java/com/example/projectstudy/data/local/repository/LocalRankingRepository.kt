@@ -27,8 +27,7 @@ import javax.inject.Inject
  * telas que estiverem observando esses dados.
  */
 class LocalRankingRepository @Inject constructor(
-    private val rankingDao: RankingDao,
-    private val localDataSeeder: LocalDataSeeder
+    private val rankingDao: RankingDao
 ) : RankingRepository {
 
     /**
@@ -43,17 +42,11 @@ class LocalRankingRepository @Inject constructor(
     override fun observeRankingByGroupId(
         groupId: String
     ): Flow<List<RankingEntry>> {
-        return flow {
-            localDataSeeder.seedIfNeeded()
-
-            emitAll(
-                rankingDao.observeRankingByGroupId(groupId)
-                    .map { entries ->
-                        entries.map { entry ->
-                            entry.toDomain()
-                        }
-                    }
-            )
-        }
+        return rankingDao.observeRankingByGroupId(groupId)
+            .map { entries ->
+                entries.map { entry ->
+                    entry.toDomain()
+                }
+            }
     }
 }
