@@ -6,6 +6,7 @@ import com.example.projectstudy.data.local.entity.GroupEntity
 import com.example.projectstudy.data.local.entity.StudyActivityEntity
 import com.example.projectstudy.data.remote.dto.GroupRemoteDto
 import com.example.projectstudy.data.remote.dto.StudyActivityRemoteDto
+import com.example.projectstudy.data.remote.dto.SyncActivityRequestDto
 
 fun GroupRemoteDto.toEntity(
     serverTimestamp: Long
@@ -80,4 +81,29 @@ fun StudyActivityRemoteDto.toMediaEntities(): List<ActivityMediaEntity> {
             position = index
         )
     }
+}
+
+fun StudyActivityEntity.toSyncRequest(
+    groupIds: List<String>,
+    mediaUris: List<String>
+): SyncActivityRequestDto {
+    return SyncActivityRequestDto(
+        id = id,
+        authorId = authorId,
+        title = title,
+        subject = subject,
+        description = description,
+        durationMinutes = durationMinutes,
+        durationSeconds = durationSeconds,
+        imageUrl = imageUrl,
+        groupIds = groupIds,
+        mediaUris = mediaUris,
+        reactions = reactions,
+        startedAtMillis = startedAtMillis,
+        endedAtMillis = endedAtMillis,
+        createdAtMillis = createdAtMillis,
+        updatedAtMillis = null,
+        isManual = isManual,
+        pendingSyncAction = pendingSyncAction ?: "CREATE"
+    )
 }

@@ -8,6 +8,7 @@ import com.example.projectstudy.data.remote.api.SyncApi
 import com.example.projectstudy.data.remote.mapper.toEntity
 import com.example.projectstudy.data.remote.mapper.toGroupRefs
 import com.example.projectstudy.data.remote.mapper.toMediaEntities
+import com.example.projectstudy.data.remote.mapper.toSyncRequest
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -25,6 +26,10 @@ class RemoteSyncService @Inject constructor(
     )
 
     suspend fun pullAndSave(accessToken: String) {
+        pushPendingActivities(
+            accessToken = accessToken
+        )
+
         val lastSyncTimestamp = preferences.getLong(
             KEY_LAST_SYNC_TIMESTAMP,
             0L
@@ -71,6 +76,49 @@ class RemoteSyncService @Inject constructor(
                 response.serverTimestamp
             )
         }
+    }
+
+    private suspend fun pushPendingActivities(
+        accessToken: String
+    ) {
+        val pendingActivities = studyActivityDao.getPendingSyncActivities()
+
+        if (pendingActivities.isEmpty()) {
+            return
+        }
+
+        val requests = pendingActivities.map { activity ->
+            val groupIds = studyActivityDao.getGroupIdsByActivityId(
+                activityId = activity.id
+            )
+
+            val mediaUris = studyActivityDao.getMediaUrisByActivityId(
+                activityId = activity.id
+            )
+
+            activity.toSyncRequest(
+                groupIds = groupIds,
+                mediaUris = mediaUris
+            )
+        }
+
+        val response = syncApi.pushActivities(
+            token = accessToken,
+            activities = requests
+        )
+
+        val syncedIds = response.syncedIds.toSet()
+
+        pendingActivities
+            .filter { activity -> activity.id in syncedIds }
+            .forEach { activity ->
+                studyActivityDao.upsertActivity(
+                    activity.copy(
+                        isSynced = true,
+                        pendingSyncAction = null
+                    )
+                )
+            }
     }
 
     private companion object {

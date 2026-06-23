@@ -19,13 +19,15 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.util.UUID
 import javax.inject.Inject
+import com.example.projectstudy.data.sync.RemoteSyncService
 
 class LocalSessionRepository @Inject constructor(
     private val studyActivityDao: StudyActivityDao,
     private val rankingDao: RankingDao,
     private val userDao: UserDao,
     private val groupDao: GroupDao,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val remoteSyncService: RemoteSyncService
 ) : SessionRepository {
 
     override suspend fun createManualSession(
@@ -104,6 +106,14 @@ class LocalSessionRepository @Inject constructor(
             groupIds = data.groupIds,
             durationMinutes = data.durationMinutes
         )
+
+        authRepository.getAccessToken()?.let { token ->
+            runCatching {
+                remoteSyncService.pullAndSave(
+                    accessToken = token
+                )
+            }
+        }
     }
 
     private suspend fun updateRankingAfterSession(
@@ -221,4 +231,5 @@ class LocalSessionRepository @Inject constructor(
             groupDao.upsertGroup(updatedGroup)
         }
     }
+
 }

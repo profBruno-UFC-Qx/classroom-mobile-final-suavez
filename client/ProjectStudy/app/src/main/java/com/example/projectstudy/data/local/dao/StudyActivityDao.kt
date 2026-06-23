@@ -181,4 +181,27 @@ interface StudyActivityDao {
     suspend fun deleteMediaByActivityId(
         activityId: String
     )
+
+    @Query(
+        """
+    SELECT groupId
+    FROM activity_group_cross_refs
+    WHERE activityId = :activityId
+    """
+    )
+    suspend fun getGroupIdsByActivityId(
+        activityId: String
+    ): List<String>
+
+    @Query(
+        """
+    SELECT uri
+    FROM activity_media
+    WHERE activityId = :activityId
+    ORDER BY position ASC
+    """
+    )
+    suspend fun getMediaUrisByActivityId(
+        activityId: String
+    ): List<String>
 }
