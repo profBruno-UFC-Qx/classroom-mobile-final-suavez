@@ -13,12 +13,14 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import com.example.projectstudy.data.sync.RemoteSyncService
 
 @Singleton
 class LocalAuthRepository @Inject constructor(
     @ApplicationContext context: Context,
     private val authApi: AuthApi,
-    private val userDao: UserDao
+    private val userDao: UserDao,
+    private val remoteSyncService: RemoteSyncService
 ) : AuthRepository {
 
     private val preferences = context.getSharedPreferences(
@@ -119,6 +121,12 @@ class LocalAuthRepository @Inject constructor(
             putBoolean(KEY_IS_LOGGED_IN, true)
             putString(KEY_ACCESS_TOKEN, accessToken)
             putString(KEY_CURRENT_USER_ID, user.id)
+        }
+
+        runCatching {
+            remoteSyncService.pullAndSave(
+                accessToken = accessToken
+            )
         }
 
         _isLoggedIn.value = true
