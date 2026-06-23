@@ -1,6 +1,12 @@
 package com.example.projectstudy.data.local.repository
 
 import android.content.Context
+import androidx.core.content.edit
+import com.example.projectstudy.data.local.dao.UserDao
+import com.example.projectstudy.data.remote.api.AuthApi
+import com.example.projectstudy.data.remote.dto.RegisterRequestDto
+import com.example.projectstudy.data.remote.dto.UserDto
+import com.example.projectstudy.data.remote.mapper.toEntity
 import com.example.projectstudy.data.repository.AuthRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -8,85 +14,140 @@ import javax.inject.Singleton
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-/**
- * Implementação local do controle de autenticação do usuário.
- *
- * Essa classe salva o estado da sessão em SharedPreferences para que o app
- * consiga manter o usuário logado mesmo quando a Activity for recriada,
- * como ao trocar o tema claro/escuro do sistema ou ao reabrir o aplicativo.
- *
- * Também expõe esse estado como StateFlow, permitindo que ViewModels e telas
- * reajam automaticamente quando o usuário fizer login ou logout.
- */
 @Singleton
 class LocalAuthRepository @Inject constructor(
-    @ApplicationContext context: Context
+    @ApplicationContext context: Context,
+    private val authApi: AuthApi,
+    private val userDao: UserDao
 ) : AuthRepository {
 
-    /**
-     * SharedPreferences usado para persistir informações simples da sessão.
-     *
-     * Neste momento, salva apenas se o usuário está logado ou não.
-     * Futuramente pode ser substituído por DataStore ou por uma estrutura
-     * mais completa com token de acesso, refresh token e dados do usuário.
-     */
     private val preferences = context.getSharedPreferences(
         "auth_session",
         Context.MODE_PRIVATE
     )
 
-    /**
-     * Estado interno de autenticação.
-     *
-     * O valor inicial é carregado diretamente do SharedPreferences. Assim,
-     * quando o app abre novamente, o estado anterior da sessão é restaurado.
-     */
     private val _isLoggedIn = MutableStateFlow(
-        preferences.getBoolean(KEY_IS_LOGGED_IN, false)
+        hasValidLocalSession()
     )
 
-    /**
-     * Estado público e observável da sessão.
-     *
-     * As telas e ViewModels devem observar este StateFlow para saber se o
-     * usuário está autenticado, sem acessar diretamente o SharedPreferences.
-     */
     override val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
 
-    /**
-     * Atualiza o estado de login do usuário.
-     *
-     * O valor é salvo no SharedPreferences e também publicado no StateFlow,
-     * garantindo que a navegação seja atualizada imediatamente.
-     *
-     * @param value true quando o usuário está logado, false quando não há sessão ativa.
-     */
-    override suspend fun setLoggedIn(value: Boolean) {
-        preferences.edit()
-            .putBoolean(KEY_IS_LOGGED_IN, value)
-            .apply()
+    override suspend fun login(
+        username: String,
+        password: String
+    ): Result<Unit> {
+        return runCatching {
+            val response = authApi.login(
+                username = username,
+                password = password
+            )
 
-        _isLoggedIn.value = value
+            saveSession(
+                accessToken = response.accessToken,
+                user = response.user
+            )
+        }
     }
 
-    /**
-     * Encerra a sessão atual do usuário.
-     *
-     * Remove o estado de login localmente e atualiza o StateFlow para que o app
-     * possa redirecionar o usuário para a tela de login.
-     */
+    override suspend fun register(
+        name: String,
+        username: String,
+        email: String,
+        password: String,
+        institution: String,
+        course: String
+    ): Result<Unit> {
+        return runCatching {
+            val response = authApi.register(
+                RegisterRequestDto(
+                    name = name,
+                    username = username,
+                    email = email,
+                    password = password,
+                    institution = institution,
+                    course = course
+                )
+            )
+
+            saveSession(
+                accessToken = response.accessToken,
+                user = response.user
+            )
+        }
+    }
+
+    override suspend fun getAccessToken(): String? {
+        return preferences.getString(KEY_ACCESS_TOKEN, null)
+    }
+
+    override suspend fun getCurrentUserId(): String? {
+        return preferences.getString(KEY_CURRENT_USER_ID, null)
+    }
+
+    override suspend fun setLoggedIn(value: Boolean) {
+        if (!value) {
+            logout()
+            return
+        }
+
+        val hasSession = hasValidLocalSession()
+
+        preferences.edit {
+            putBoolean(KEY_IS_LOGGED_IN, hasSession)
+        }
+
+        _isLoggedIn.value = hasSession
+    }
+
     override suspend fun logout() {
-        preferences.edit()
-            .putBoolean(KEY_IS_LOGGED_IN, false)
-            .apply()
+        preferences.edit {
+            putBoolean(KEY_IS_LOGGED_IN, false)
+            remove(KEY_ACCESS_TOKEN)
+            remove(KEY_CURRENT_USER_ID)
+        }
 
         _isLoggedIn.value = false
     }
 
-    /**
-     * Chaves usadas para salvar os dados da sessão local.
-     */
+    private suspend fun saveSession(
+        accessToken: String,
+        user: UserDto
+    ) {
+        userDao.upsertUser(user.toEntity())
+
+        preferences.edit {
+            putBoolean(KEY_IS_LOGGED_IN, true)
+            putString(KEY_ACCESS_TOKEN, accessToken)
+            putString(KEY_CURRENT_USER_ID, user.id)
+        }
+
+        _isLoggedIn.value = true
+    }
+
+    private fun hasValidLocalSession(): Boolean {
+        val isLoggedIn = preferences.getBoolean(
+            KEY_IS_LOGGED_IN,
+            false
+        )
+
+        val accessToken = preferences.getString(
+            KEY_ACCESS_TOKEN,
+            null
+        )
+
+        val currentUserId = preferences.getString(
+            KEY_CURRENT_USER_ID,
+            null
+        )
+
+        return isLoggedIn &&
+                !accessToken.isNullOrBlank() &&
+                !currentUserId.isNullOrBlank()
+    }
+
     private companion object {
         const val KEY_IS_LOGGED_IN = "is_logged_in"
+        const val KEY_ACCESS_TOKEN = "access_token"
+        const val KEY_CURRENT_USER_ID = "current_user_id"
     }
 }
