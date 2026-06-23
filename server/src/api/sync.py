@@ -1,3 +1,4 @@
+import time
 from typing import List
 
 from fastapi import APIRouter, Depends, Query
@@ -25,6 +26,10 @@ router = APIRouter(
 )
 
 
+def current_time_millis() -> int:
+    return int(time.time() * 1000)
+
+
 @router.post("/activity", response_model=SyncResponse)
 async def sync_offline_activities(
     activities: List[SyncActivityRequest],
@@ -37,6 +42,7 @@ async def sync_offline_activities(
     for act in activities:
         try:
             action = act.pending_sync_action.upper()
+            now = current_time_millis()
 
             if action in ["CREATE", "UPDATE"]:
                 existing = (
@@ -70,11 +76,14 @@ async def sync_offline_activities(
                     existing.started_at_millis = act.started_at_millis
                     existing.ended_at_millis = act.ended_at_millis
                     existing.created_at_millis = act.created_at_millis
+                    existing.updated_at_millis = now
                     existing.is_manual = act.is_manual
 
                     existing.author_id = user_author.id
                     existing.author_name = user_author.name
-                    existing.author_avatar_initials = user_author.avatar_initials
+                    existing.author_avatar_initials = (
+                        user_author.avatar_initials
+                    )
                     existing.author_avatar_url = user_author.avatar_url
                 else:
                     new_act = DBStudyActivity(
@@ -82,23 +91,22 @@ async def sync_offline_activities(
                         title=act.title,
                         subject=act.subject,
                         description=act.description,
-
                         duration_minutes=act.duration_minutes,
                         duration_seconds=act.duration_seconds,
-
                         image_url=act.image_url,
                         group_ids=act.group_ids,
                         media_uris=act.media_uris,
                         reactions=act.reactions,
-
                         started_at_millis=act.started_at_millis,
                         ended_at_millis=act.ended_at_millis,
                         created_at_millis=act.created_at_millis,
+                        updated_at_millis=now,
                         is_manual=act.is_manual,
-
                         author_id=user_author.id,
                         author_name=user_author.name,
-                        author_avatar_initials=user_author.avatar_initials,
+                        author_avatar_initials=(
+                            user_author.avatar_initials
+                        ),
                         author_avatar_url=user_author.avatar_url,
                     )
 
@@ -146,6 +154,8 @@ async def pull_offline_data(
     db: Session = Depends(get_db),
     current_user: DBUser = Depends(get_current_user),
 ):
+    server_timestamp = current_time_millis()
+
     sync_timestamp = (
         last_sync_timestamp
         if last_sync_timestamp is not None
@@ -165,12 +175,12 @@ async def pull_offline_data(
     recent_groups = [
         Group.model_validate(group)
         for group in user_groups
-        if group.created_at_millis > sync_timestamp
+        if group.updated_at_millis > sync_timestamp
     ]
 
     recent_activities_db = (
         db.query(DBStudyActivity)
-        .filter(DBStudyActivity.created_at_millis > sync_timestamp)
+        .filter(DBStudyActivity.updated_at_millis > sync_timestamp)
         .all()
     )
 
@@ -205,6 +215,7 @@ async def pull_offline_data(
                 started_at_millis=act.started_at_millis,
                 ended_at_millis=act.ended_at_millis,
                 created_at_millis=act.created_at_millis,
+                updated_at_millis=act.updated_at_millis,
                 is_manual=act.is_manual,
             )
         )
@@ -212,4 +223,5 @@ async def pull_offline_data(
     return SyncPullResponse(
         activities=activities_response,
         groups=recent_groups,
+        server_timestamp=server_timestamp,
     )

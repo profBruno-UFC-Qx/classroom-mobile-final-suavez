@@ -7,7 +7,6 @@ from src.schemas.base import BaseSchema
 from src.schemas.group import Group
 
 
-# talvez devesse ficar em activity.py, mas como eu tava separando do mesmo jeito das rotas, deixei aqui mesmo pra num misturar as coisas
 class SyncActivityRequest(BaseSchema):
     id: str
     author_id: str
@@ -23,6 +22,7 @@ class SyncActivityRequest(BaseSchema):
     started_at_millis: int
     ended_at_millis: int
     created_at_millis: int
+    updated_at_millis: int | None = None
     is_manual: bool
     pending_sync_action: str
 
@@ -35,3 +35,4 @@ class SyncResponse(BaseSchema):
 class SyncPullResponse(BaseSchema):
     activities: List[StudyActivity]
     groups: List[Group]
+    server_timestamp: int

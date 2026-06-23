@@ -14,6 +14,7 @@ class Group(BaseSchema):
     user_minutes: int = 0
     ranking_metric: str
     created_at_millis: int
+    updated_at_millis: int
     is_active: bool = True
 
 
