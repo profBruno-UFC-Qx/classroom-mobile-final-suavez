@@ -30,6 +30,70 @@ def current_time_millis() -> int:
     return int(time.time() * 1000)
 
 
+def recalculate_group_progress(
+    db: Session,
+    group_id: str,
+    current_user_id: str,
+    now: int,
+) -> None:
+    group = (
+        db.query(DBGroup)
+        .filter(DBGroup.id == group_id)
+        .first()
+    )
+
+    if group is None:
+        return
+
+    activities = db.query(DBStudyActivity).all()
+
+    group_activities = [
+        activity
+        for activity in activities
+        if group_id in (activity.group_ids or [])
+    ]
+
+    current_minutes = sum(
+        activity.duration_minutes
+        for activity in group_activities
+    )
+
+    user_minutes = sum(
+        activity.duration_minutes
+        for activity in group_activities
+        if activity.author_id == current_user_id
+    )
+
+    member_ids = list(group.member_ids or [])
+
+    if current_user_id not in member_ids:
+        member_ids.append(current_user_id)
+
+    group.member_ids = member_ids
+    group.member_count = len(member_ids)
+    group.current_minutes = current_minutes
+    group.user_minutes = user_minutes
+    group.user_ranking_position = 1 if user_minutes > 0 else 0
+    group.updated_at_millis = now
+
+
+def recalculate_groups_progress(
+    db: Session,
+    group_ids: list[str],
+    current_user_id: str,
+    now: int,
+) -> None:
+    unique_group_ids = set(group_ids)
+
+    for group_id in unique_group_ids:
+        recalculate_group_progress(
+            db=db,
+            group_id=group_id,
+            current_user_id=current_user_id,
+            now=now,
+        )
+
+
 @router.post("/activity", response_model=SyncResponse)
 async def sync_offline_activities(
     activities: List[SyncActivityRequest],
@@ -43,6 +107,7 @@ async def sync_offline_activities(
         try:
             action = act.pending_sync_action.upper()
             now = current_time_millis()
+            affected_group_ids = list(act.group_ids or [])
 
             if action in ["CREATE", "UPDATE"]:
                 existing = (
@@ -61,6 +126,9 @@ async def sync_offline_activities(
                     user_author = current_user
 
                 if existing:
+                    old_group_ids = list(existing.group_ids or [])
+                    affected_group_ids.extend(old_group_ids)
+
                     existing.title = act.title
                     existing.subject = act.subject
                     existing.description = act.description
@@ -112,6 +180,15 @@ async def sync_offline_activities(
 
                     db.add(new_act)
 
+                db.flush()
+
+                recalculate_groups_progress(
+                    db=db,
+                    group_ids=affected_group_ids,
+                    current_user_id=current_user.id,
+                    now=now,
+                )
+
                 db.commit()
                 synced.append(act.id)
 
@@ -123,7 +200,19 @@ async def sync_offline_activities(
                 )
 
                 if existing:
+                    affected_group_ids.extend(
+                        list(existing.group_ids or [])
+                    )
+
                     db.delete(existing)
+                    db.flush()
+
+                    recalculate_groups_progress(
+                        db=db,
+                        group_ids=affected_group_ids,
+                        current_user_id=current_user.id,
+                        now=now,
+                    )
 
                 db.commit()
                 synced.append(act.id)
@@ -225,3 +314,4 @@ async def pull_offline_data(
         groups=recent_groups,
         server_timestamp=server_timestamp,
     )
+    
