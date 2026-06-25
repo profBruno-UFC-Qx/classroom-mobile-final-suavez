@@ -14,11 +14,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.projectstudy.core.util.toDurationText
-import com.example.projectstudy.domain.model.User
 
 @Composable
 fun ProfileStatsRow(
-    user: User,
+    totalMinutes: Int,
+    totalSessions: Int,
+    activeDays: Int,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -29,19 +30,19 @@ fun ProfileStatsRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         ProfileStatItem(
-            value = user.streakDays.toString(),
+            value = activeDays.toString(),
             label = "Dias",
             valueColor = MaterialTheme.colorScheme.primary
         )
 
         ProfileStatItem(
-            value = user.totalMinutes.toDurationText(),
+            value = totalMinutes.toDurationText(),
             label = "Total",
             valueColor = MaterialTheme.colorScheme.primary
         )
 
         ProfileStatItem(
-            value = user.totalActivities.toString(),
+            value = totalSessions.toString(),
             label = "Sessões",
             valueColor = MaterialTheme.colorScheme.primary
         )
