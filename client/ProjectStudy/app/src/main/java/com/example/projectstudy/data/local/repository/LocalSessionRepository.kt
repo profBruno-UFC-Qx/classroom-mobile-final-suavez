@@ -20,6 +20,8 @@ import java.time.ZoneOffset
 import java.util.UUID
 import javax.inject.Inject
 import com.example.projectstudy.data.sync.RemoteSyncService
+import android.net.Uri
+import com.example.projectstudy.data.local.media.LocalMediaStorage
 
 class LocalSessionRepository @Inject constructor(
     private val studyActivityDao: StudyActivityDao,
@@ -27,8 +29,12 @@ class LocalSessionRepository @Inject constructor(
     private val userDao: UserDao,
     private val groupDao: GroupDao,
     private val authRepository: AuthRepository,
-    private val remoteSyncService: RemoteSyncService
+    private val remoteSyncService: RemoteSyncService,
+    private val localMediaStorage: LocalMediaStorage
 ) : SessionRepository {
+
+
+
 
     override suspend fun createManualSession(
         data: CreateManualSessionData
@@ -47,14 +53,34 @@ class LocalSessionRepository @Inject constructor(
             "Usuário autenticado não encontrado no banco local."
         }
 
-        val firstMediaUri = data.mediaUris.firstOrNull().orEmpty()
-
         val startedAtMillis = buildStartedAtMillis(
             dateMillis = data.dateMillis,
             startTimeMinutes = data.startTimeMinutes
         )
 
         val endedAtMillis = startedAtMillis + data.durationMinutes * 60_000L
+
+        val localMediaUris = data.mediaUris
+            .filter { uri ->
+                uri.isNotBlank()
+            }
+            .mapNotNull { uri ->
+                runCatching {
+                    if (
+                        uri.startsWith("file://") ||
+                        uri.startsWith("http://") ||
+                        uri.startsWith("https://")
+                    ) {
+                        uri
+                    } else {
+                        localMediaStorage.saveImageLocally(
+                            sourceUri = Uri.parse(uri)
+                        )
+                    }
+                }.getOrNull()
+            }
+
+        val localImageUri = localMediaUris.firstOrNull().orEmpty()
 
         val activity = StudyActivity(
             id = UUID.randomUUID().toString(),
@@ -69,8 +95,8 @@ class LocalSessionRepository @Inject constructor(
             subject = data.subject,
             description = data.description,
             durationMinutes = data.durationMinutes,
-            imageUrl = firstMediaUri,
-            mediaUris = data.mediaUris,
+            imageUrl = localImageUri,
+            mediaUris = localMediaUris,
             reactions = 0,
             startedAtMillis = startedAtMillis,
             endedAtMillis = endedAtMillis,
