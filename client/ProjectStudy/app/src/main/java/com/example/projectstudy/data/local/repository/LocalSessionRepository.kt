@@ -22,6 +22,7 @@ import javax.inject.Inject
 import com.example.projectstudy.data.sync.RemoteSyncService
 import android.net.Uri
 import com.example.projectstudy.data.local.media.LocalMediaStorage
+import com.example.projectstudy.data.remote.api.MediaApi
 
 class LocalSessionRepository @Inject constructor(
     private val studyActivityDao: StudyActivityDao,
@@ -30,7 +31,8 @@ class LocalSessionRepository @Inject constructor(
     private val groupDao: GroupDao,
     private val authRepository: AuthRepository,
     private val remoteSyncService: RemoteSyncService,
-    private val localMediaStorage: LocalMediaStorage
+    private val localMediaStorage: LocalMediaStorage,
+    private val mediaApi: MediaApi
 ) : SessionRepository {
 
 
@@ -80,7 +82,27 @@ class LocalSessionRepository @Inject constructor(
                 }.getOrNull()
             }
 
-        val localImageUri = localMediaUris.firstOrNull().orEmpty()
+        val token = authRepository.getAccessToken()
+
+        val uploadedMediaUris = if (
+            token != null &&
+            localMediaUris.isNotEmpty()
+        ) {
+            localMediaUris.map { localUri ->
+                runCatching {
+                    mediaApi.uploadActivityImage(
+                        token = token,
+                        imageUri = localUri
+                    ).imageUrl
+                }.getOrElse {
+                    localUri
+                }
+            }
+        } else {
+            localMediaUris
+        }
+
+        val imageUrl = uploadedMediaUris.firstOrNull().orEmpty()
 
         val activity = StudyActivity(
             id = UUID.randomUUID().toString(),
@@ -95,8 +117,8 @@ class LocalSessionRepository @Inject constructor(
             subject = data.subject,
             description = data.description,
             durationMinutes = data.durationMinutes,
-            imageUrl = localImageUri,
-            mediaUris = localMediaUris,
+            imageUrl = imageUrl,
+            mediaUris = uploadedMediaUris,
             reactions = 0,
             startedAtMillis = startedAtMillis,
             endedAtMillis = endedAtMillis,

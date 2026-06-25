@@ -1,3 +1,6 @@
 .venv/
 server/.env
 server/project_study.db
+
+# Uploaded media files
+server/uploads/
