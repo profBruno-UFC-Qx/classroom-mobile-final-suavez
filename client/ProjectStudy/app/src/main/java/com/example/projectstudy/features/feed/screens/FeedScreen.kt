@@ -26,7 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.projectstudy.core.util.toFeedDateLabel
-import com.example.projectstudy.features.feed.components.ActivityCard
+import com.example.projectstudy.ui.components.ActivityCard
 import com.example.projectstudy.features.feed.components.FeedDateHeader
 import com.example.projectstudy.features.feed.components.GroupBanner
 import com.example.projectstudy.features.feed.components.RankingSummaryCard
