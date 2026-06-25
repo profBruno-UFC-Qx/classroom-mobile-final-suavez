@@ -139,8 +139,6 @@ class RegisterViewModel @Inject constructor(
 
         val usernameError = if (state.username.isBlank()) {
             "Informe seu username"
-        } else if (!state.username.startsWith("@")) {
-            "O username deve começar com @"
         } else {
             null
         }
