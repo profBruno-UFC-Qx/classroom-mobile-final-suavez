@@ -16,6 +16,7 @@ from src.schemas.sync import (
     SyncPullResponse,
     SyncResponse,
 )
+from src.schemas.ranking import RankingEntry, RankingUser
 from src.schemas.user import ActivityAuthor
 from src.security import get_current_user
 
@@ -93,6 +94,81 @@ def recalculate_groups_progress(
             now=now,
         )
 
+def build_ranking_for_group(
+    db: Session,
+    group_id: str,
+    current_user_id: str,
+) -> list[RankingEntry]:
+    activities = db.query(DBStudyActivity).all()
+
+    group_activities = [
+        activity
+        for activity in activities
+        if group_id in (activity.group_ids or [])
+    ]
+
+    minutes_by_user: dict[str, int] = {}
+    active_days_by_user: dict[str, set[str]] = {}
+
+    for activity in group_activities:
+        minutes_by_user[activity.author_id] = (
+            minutes_by_user.get(activity.author_id, 0)
+            + activity.duration_minutes
+        )
+
+        day_key = time.strftime(
+            "%Y-%m-%d",
+            time.localtime(activity.started_at_millis / 1000),
+        )
+
+        active_days_by_user.setdefault(
+            activity.author_id,
+            set(),
+        ).add(day_key)
+
+    ordered_user_ids = sorted(
+        minutes_by_user.keys(),
+        key=lambda user_id: (
+            minutes_by_user[user_id],
+            len(active_days_by_user.get(user_id, set())),
+        ),
+        reverse=True,
+    )
+
+    ranking_entries = []
+
+    for index, user_id in enumerate(ordered_user_ids):
+        user = (
+            db.query(DBUser)
+            .filter(DBUser.id == user_id)
+            .first()
+        )
+
+        if user is None:
+            continue
+
+        ranking_entries.append(
+            RankingEntry(
+                group_id=group_id,
+                user=RankingUser(
+                    id=user.id,
+                    name=user.name,
+                    username=user.username,
+                    email=user.email,
+                    institution=user.institution,
+                    course=user.course,
+                    avatar_initials=user.avatar_initials,
+                    avatar_url=user.avatar_url,
+                ),
+                total_minutes=minutes_by_user[user_id],
+                active_days=len(active_days_by_user.get(user_id, set())),
+                position=index + 1,
+                is_current_user=user_id == current_user_id,
+                updated_at_millis=current_time_millis(),
+            )
+        )
+
+    return ranking_entries
 
 @router.post("/activity", response_model=SyncResponse)
 async def sync_offline_activities(
@@ -267,6 +343,18 @@ async def pull_offline_data(
         if group.updated_at_millis > sync_timestamp
     ]
 
+    ranking_entries = []
+
+    for group in user_groups:
+        if group.updated_at_millis > sync_timestamp:
+            ranking_entries.extend(
+                build_ranking_for_group(
+                    db=db,
+                    group_id=group.id,
+                    current_user_id=current_user.id,
+                )
+            )
+
     recent_activities_db = (
         db.query(DBStudyActivity)
         .filter(DBStudyActivity.updated_at_millis > sync_timestamp)
@@ -312,6 +400,7 @@ async def pull_offline_data(
     return SyncPullResponse(
         activities=activities_response,
         groups=recent_groups,
+        ranking_entries=ranking_entries,
         server_timestamp=server_timestamp,
     )
     

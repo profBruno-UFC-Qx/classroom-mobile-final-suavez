@@ -5,6 +5,7 @@ from pydantic import Field
 from src.schemas.activity import StudyActivity
 from src.schemas.base import BaseSchema
 from src.schemas.group import Group
+from src.schemas.ranking import RankingEntry
 
 
 class SyncActivityRequest(BaseSchema):
@@ -35,4 +36,5 @@ class SyncResponse(BaseSchema):
 class SyncPullResponse(BaseSchema):
     activities: List[StudyActivity]
     groups: List[Group]
+    ranking_entries: List[RankingEntry]
     server_timestamp: int
