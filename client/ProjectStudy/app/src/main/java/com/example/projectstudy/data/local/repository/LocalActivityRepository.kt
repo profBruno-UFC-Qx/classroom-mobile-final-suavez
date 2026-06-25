@@ -25,8 +25,7 @@ import javax.inject.Inject
  * é refletida automaticamente nas telas que estiverem observando esses dados.
  */
 class LocalActivityRepository @Inject constructor(
-    private val studyActivityDao: StudyActivityDao,
-    private val localDataSeeder: LocalDataSeeder
+    private val studyActivityDao: StudyActivityDao
 ) : ActivityRepository {
 
     /**
@@ -42,18 +41,12 @@ class LocalActivityRepository @Inject constructor(
     override fun observeActivitiesByGroupId(
         groupId: String
     ): Flow<List<StudyActivity>> {
-        return flow {
-            localDataSeeder.seedIfNeeded()
-
-            emitAll(
-                studyActivityDao.observeActivitiesByGroupId(groupId)
-                    .map { activities ->
-                        activities.map { activity ->
-                            activity.toDomain()
-                        }
-                    }
-            )
-        }
+        return studyActivityDao.observeActivitiesByGroupId(groupId)
+            .map { activities ->
+                activities.map { activity ->
+                    activity.toDomain()
+                }
+            }
     }
 
     /**
@@ -68,17 +61,11 @@ class LocalActivityRepository @Inject constructor(
     override fun observeActivitiesByUserId(
         userId: String
     ): Flow<List<StudyActivity>> {
-        return flow {
-            localDataSeeder.seedIfNeeded()
-
-            emitAll(
-                studyActivityDao.observeActivitiesByUserId(userId)
-                    .map { activities ->
-                        activities.map { activity ->
-                            activity.toDomain()
-                        }
-                    }
-            )
-        }
+        return studyActivityDao.observeActivitiesByUserId(userId)
+            .map { activities ->
+                activities.map { activity ->
+                    activity.toDomain()
+                }
+            }
     }
 }

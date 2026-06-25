@@ -24,14 +24,16 @@ class LoginViewModel @Inject constructor(
             is LoginEvent.EmailOrUsernameChanged -> {
                 _uiState.value = _uiState.value.copy(
                     emailOrUsername = event.value,
-                    emailOrUsernameError = null
+                    emailOrUsernameError = null,
+                    error = null
                 )
             }
 
             is LoginEvent.PasswordChanged -> {
                 _uiState.value = _uiState.value.copy(
                     password = event.value,
-                    passwordError = null
+                    passwordError = null,
+                    error = null
                 )
             }
 
@@ -60,12 +62,31 @@ class LoginViewModel @Inject constructor(
                 error = null
             )
 
-            authRepository.setLoggedIn(true)
-
-            _uiState.value = _uiState.value.copy(
-                isLoading = false,
-                loggedIn = true
+            val username = normalizeEmailOrUsername(
+                value = current.emailOrUsername
             )
+
+            val result = authRepository.login(
+                username = username,
+                password = current.password
+            )
+
+            result
+                .onSuccess {
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        loggedIn = true,
+                        error = null
+                    )
+                }
+                .onFailure { throwable ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        loggedIn = false,
+                        error = throwable.message
+                            ?: "Não foi possível fazer login"
+                    )
+                }
         }
     }
 
@@ -80,8 +101,8 @@ class LoginViewModel @Inject constructor(
 
         val passwordError = if (state.password.isBlank()) {
             "Informe sua senha"
-        } else if (state.password.length < 8) {
-            "A senha precisa ter pelo menos 8 caracteres"
+        } else if (state.password.length < 6) {
+            "A senha precisa ter pelo menos 6 caracteres"
         } else {
             null
         }
@@ -93,5 +114,15 @@ class LoginViewModel @Inject constructor(
 
         return emailOrUsernameError == null &&
                 passwordError == null
+    }
+
+    private fun normalizeEmailOrUsername(value: String): String {
+        val trimmed = value.trim()
+
+        return if (trimmed.startsWith("@")) {
+            trimmed.removePrefix("@")
+        } else {
+            trimmed
+        }
     }
 }

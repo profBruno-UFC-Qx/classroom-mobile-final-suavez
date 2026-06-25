@@ -2,6 +2,8 @@ package com.example.projectstudy.features.feed.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.projectstudy.data.repository.AuthRepository
+import com.example.projectstudy.data.sync.RemoteSyncService
 import com.example.projectstudy.domain.usecase.GetFirstUserGroupUseCase
 import com.example.projectstudy.domain.usecase.GetGroupActivitiesUseCase
 import com.example.projectstudy.domain.usecase.GetGroupRankingUseCase
@@ -20,7 +22,9 @@ import kotlinx.coroutines.launch
 class FeedViewModel @Inject constructor(
     private val getFirstUserGroupUseCase: GetFirstUserGroupUseCase,
     private val getGroupActivitiesUseCase: GetGroupActivitiesUseCase,
-    private val getGroupRankingUseCase: GetGroupRankingUseCase
+    private val getGroupRankingUseCase: GetGroupRankingUseCase,
+    private val authRepository: AuthRepository,
+    private val remoteSyncService: RemoteSyncService
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FeedUiState())
@@ -50,6 +54,7 @@ class FeedViewModel @Inject constructor(
                         ) { activities, ranking ->
                             FeedUiState(
                                 isLoading = false,
+                                isRefreshing = _uiState.value.isRefreshing,
                                 group = group,
                                 activities = activities,
                                 ranking = ranking,
@@ -64,9 +69,43 @@ class FeedViewModel @Inject constructor(
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
+                    isRefreshing = false,
                     error = e.message ?: "Erro ao carregar feed"
                 )
             }
+        }
+    }
+
+    fun refreshRemoteData() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(
+                isRefreshing = true,
+                error = null
+            )
+
+            val token = authRepository.getAccessToken()
+
+            if (token.isNullOrBlank()) {
+                _uiState.value = _uiState.value.copy(
+                    isRefreshing = false,
+                    error = "Usuário não autenticado"
+                )
+                return@launch
+            }
+
+            runCatching {
+                remoteSyncService.pullAndSave(
+                    accessToken = token
+                )
+            }.onFailure { error ->
+                _uiState.value = _uiState.value.copy(
+                    error = error.message ?: "Erro ao atualizar feed"
+                )
+            }
+
+            _uiState.value = _uiState.value.copy(
+                isRefreshing = false
+            )
         }
     }
 }

@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -20,9 +22,10 @@ import com.example.projectstudy.features.profile.components.ProfileBadgeRow
 import com.example.projectstudy.features.profile.components.ProfileHeader
 import com.example.projectstudy.features.profile.components.ProfileStatsRow
 import com.example.projectstudy.features.profile.components.ProfileStreakCard
-import com.example.projectstudy.features.profile.components.RecentSessionItem
+import com.example.projectstudy.ui.components.ActivityCard
 import com.example.projectstudy.features.profile.viewmodel.ProfileViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel()
@@ -50,53 +53,65 @@ fun ProfileScreen(
             uiState.user != null -> {
                 val user = uiState.user!!
 
-                LazyColumn(
+                PullToRefreshBox(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(
-                        start = 16.dp,
-                        top = 12.dp,
-                        end = 16.dp,
-                        bottom = 96.dp
-                    ),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    isRefreshing = uiState.isRefreshing,
+                    onRefresh = {
+                        viewModel.refreshRemoteData()
+                    }
                 ) {
-                    item {
-                        ProfileHeader(
-                            user = user
-                        )
-                    }
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(
+                            start = 16.dp,
+                            top = 12.dp,
+                            end = 16.dp,
+                            bottom = 96.dp
+                        ),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        item {
+                            ProfileHeader(
+                                user = user
+                            )
+                        }
 
-                    item {
-                        ProfileStatsRow(
-                            user = user
-                        )
-                    }
+                        item {
+                            ProfileStatsRow(
+                                totalMinutes = uiState.totalMinutes,
+                                totalSessions = uiState.totalSessions,
+                                activeDays = uiState.activeDays
+                            )
+                        }
 
-                    item {
-                        ProfileStreakCard(
-                            streakDays = user.streakDays
-                        )
-                    }
+                        item {
+                            ProfileStreakCard(
+                                streakDays = uiState.streakDays
+                            )
+                        }
 
-                    item {
-                        ProfileBadgeRow()
-                    }
+                        item {
+                            ProfileBadgeRow()
+                        }
 
-                    item {
-                        Text(
-                            text = "Últimas sessões",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
+                        item {
+                            Text(
+                                text = "Últimas sessões",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
 
-                    items(
-                        items = uiState.recentActivities.take(5),
-                        key = { activity -> activity.id }
-                    ) { activity ->
-                        RecentSessionItem(
-                            activity = activity
-                        )
+                        items(
+                            items = uiState.recentActivities.take(5),
+                            key = { activity ->
+                                activity.id
+                            }
+                        ) { activity ->
+                            ActivityCard(
+                                activity = activity
+                            )
+                        }
                     }
                 }
             }

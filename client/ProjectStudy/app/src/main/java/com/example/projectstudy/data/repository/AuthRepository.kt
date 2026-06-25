@@ -24,6 +24,24 @@ interface AuthRepository {
      */
     val isLoggedIn: StateFlow<Boolean>
 
+    suspend fun login(
+        username: String,
+        password: String
+    ): Result<Unit>
+
+    suspend fun register(
+        name: String,
+        username: String,
+        email: String,
+        password: String,
+        institution: String,
+        course: String
+    ): Result<Unit>
+
+    suspend fun getAccessToken(): String?
+
+    suspend fun getCurrentUserId(): String?
+
     /**
      * Atualiza o estado de login do usuário.
      *

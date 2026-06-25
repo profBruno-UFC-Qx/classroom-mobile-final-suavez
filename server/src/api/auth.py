@@ -1,8 +1,7 @@
 import uuid
 
-from fastapi import HTTPException, APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from loguru import logger
 from sqlalchemy.orm import Session
 
 from src.database import get_db
@@ -21,9 +20,14 @@ router = APIRouter(
 )
 
 
-@router.post("/register", response_model=User, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/register",
+    response_model=Token,
+    status_code=status.HTTP_201_CREATED,
+)
 async def register_user(
-    user_in: UserRegister, db: Session = Depends(get_db)
+    user_in: UserRegister,
+    db: Session = Depends(get_db),
 ):
     user_exists = (
         db.query(DBUser)
@@ -36,13 +40,14 @@ async def register_user(
 
     if user_exists:
         raise HTTPException(
-            status_code=400,
-            detail="Email ou nome de usuário já registado no sistema.",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email ou nome de usuário já registrado no sistema.",
         )
 
     user_id = f"usr_{uuid.uuid4().hex[:8]}"
+
     initials = "".join(
-        [n[0] for n in user_in.name.split()[:2]]
+        [name_part[0] for name_part in user_in.name.split()[:2]]
     ).upper()
 
     new_user = DBUser(
@@ -64,10 +69,20 @@ async def register_user(
     db.commit()
     db.refresh(new_user)
 
-    return new_user
+    access_token = create_access_token(
+        data={
+            "sub": new_user.id,
+        }
+    )
+
+    return Token(
+        access_token=access_token,
+        token_type="bearer",
+        user=new_user,
+    )
 
 
-@router.post("/login", response_model=Token)
+@router.post("/login")
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db),
@@ -82,21 +97,30 @@ async def login(
     )
 
     if not user or not verify_password(
-        form_data.password, user.hashed_password
+        form_data.password,
+        user.hashed_password,
     ):
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Credenciais incorretas",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    access_token = create_access_token(data={"sub": user.id})
-
-    return Token(
-        access_token=access_token, token_type="bearer", user=user
+    access_token = create_access_token(
+        data={
+            "sub": user.id,
+        }
     )
+
+    return {
+    "access_token": access_token,
+    "token_type": "bearer",
+    "user": User.model_validate(user).model_dump(by_alias=True),
+}
 
 
 @router.get("/me", response_model=User)
-async def get_me(current_user: DBUser = Depends(get_current_user)):
+async def get_me(
+    current_user: DBUser = Depends(get_current_user),
+):
     return current_user

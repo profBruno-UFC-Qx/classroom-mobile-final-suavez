@@ -22,8 +22,7 @@ import javax.inject.Inject
  * sempre que os dados dos grupos forem alterados no Room.
  */
 class LocalGroupRepository @Inject constructor(
-    private val groupDao: GroupDao,
-    private val localDataSeeder: LocalDataSeeder
+    private val groupDao: GroupDao
 ) : GroupRepository {
 
     /**
@@ -39,18 +38,12 @@ class LocalGroupRepository @Inject constructor(
      * @return Fluxo com o primeiro grupo convertido para o modelo de domínio.
      */
     override fun observeFirstUserGroup(): Flow<Group> {
-        return flow {
-            localDataSeeder.seedIfNeeded()
-
-            emitAll(
-                groupDao.observeGroups()
-                    .map { groups ->
-                        requireNotNull(groups.firstOrNull()) {
-                            "Nenhum grupo encontrado no banco local."
-                        }.toDomain()
-                    }
-            )
-        }
+        return groupDao.observeGroups()
+            .map { groups ->
+                requireNotNull(groups.firstOrNull()) {
+                    "Nenhum grupo sincronizado encontrado no banco local."
+                }.toDomain()
+            }
     }
 
     /**
@@ -62,17 +55,11 @@ class LocalGroupRepository @Inject constructor(
      * @return Fluxo com a lista de grupos convertidos para o modelo de domínio.
      */
     override fun observeUserGroups(): Flow<List<Group>> {
-        return flow {
-            localDataSeeder.seedIfNeeded()
-
-            emitAll(
-                groupDao.observeGroups()
-                    .map { groups ->
-                        groups.map { group ->
-                            group.toDomain()
-                        }
-                    }
-            )
-        }
+        return groupDao.observeGroups()
+            .map { groups ->
+                groups.map { group ->
+                    group.toDomain()
+                }
+            }
     }
 }

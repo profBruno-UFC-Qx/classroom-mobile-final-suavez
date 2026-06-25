@@ -2,17 +2,19 @@ package com.example.projectstudy.features.auth.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.projectstudy.data.repository.AuthRepository
 import com.example.projectstudy.features.auth.state.RegisterEvent
 import com.example.projectstudy.features.auth.state.RegisterUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class RegisterViewModel @Inject constructor() : ViewModel() {
+class RegisterViewModel @Inject constructor(
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RegisterUiState())
     val uiState = _uiState.asStateFlow()
@@ -22,47 +24,54 @@ class RegisterViewModel @Inject constructor() : ViewModel() {
             is RegisterEvent.NameChanged -> {
                 _uiState.value = _uiState.value.copy(
                     name = event.value,
-                    nameError = null
+                    nameError = null,
+                    error = null
                 )
             }
 
             is RegisterEvent.UsernameChanged -> {
                 _uiState.value = _uiState.value.copy(
                     username = event.value,
-                    usernameError = null
+                    usernameError = null,
+                    error = null
                 )
             }
 
             is RegisterEvent.EmailChanged -> {
                 _uiState.value = _uiState.value.copy(
                     email = event.value,
-                    emailError = null
+                    emailError = null,
+                    error = null
                 )
             }
 
             is RegisterEvent.InstitutionChanged -> {
                 _uiState.value = _uiState.value.copy(
-                    institution = event.value
+                    institution = event.value,
+                    error = null
                 )
             }
 
             is RegisterEvent.CourseChanged -> {
                 _uiState.value = _uiState.value.copy(
-                    course = event.value
+                    course = event.value,
+                    error = null
                 )
             }
 
             is RegisterEvent.PasswordChanged -> {
                 _uiState.value = _uiState.value.copy(
                     password = event.value,
-                    passwordError = null
+                    passwordError = null,
+                    error = null
                 )
             }
 
             is RegisterEvent.ConfirmPasswordChanged -> {
                 _uiState.value = _uiState.value.copy(
                     confirmPassword = event.value,
-                    confirmPasswordError = null
+                    confirmPasswordError = null,
+                    error = null
                 )
             }
 
@@ -91,12 +100,31 @@ class RegisterViewModel @Inject constructor() : ViewModel() {
                 error = null
             )
 
-            delay(500)
-
-            _uiState.value = _uiState.value.copy(
-                isLoading = false,
-                registered = true
+            val result = authRepository.register(
+                name = current.name.trim(),
+                username = normalizeUsername(current.username),
+                email = current.email.trim(),
+                password = current.password,
+                institution = current.institution.trim(),
+                course = current.course.trim()
             )
+
+            result
+                .onSuccess {
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        registered = true,
+                        error = null
+                    )
+                }
+                .onFailure { throwable ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        registered = false,
+                        error = throwable.message
+                            ?: "Não foi possível criar a conta"
+                    )
+                }
         }
     }
 
@@ -111,8 +139,6 @@ class RegisterViewModel @Inject constructor() : ViewModel() {
 
         val usernameError = if (state.username.isBlank()) {
             "Informe seu username"
-        } else if (!state.username.startsWith("@")) {
-            "O username deve começar com @"
         } else {
             null
         }
@@ -127,8 +153,8 @@ class RegisterViewModel @Inject constructor() : ViewModel() {
 
         val passwordError = if (state.password.isBlank()) {
             "Informe sua senha"
-        } else if (state.password.length < 8) {
-            "A senha precisa ter pelo menos 8 caracteres"
+        } else if (state.password.length < 6) {
+            "A senha precisa ter pelo menos 6 caracteres"
         } else {
             null
         }
@@ -154,5 +180,11 @@ class RegisterViewModel @Inject constructor() : ViewModel() {
                 emailError == null &&
                 passwordError == null &&
                 confirmPasswordError == null
+    }
+
+    private fun normalizeUsername(username: String): String {
+        return username
+            .trim()
+            .removePrefix("@")
     }
 }

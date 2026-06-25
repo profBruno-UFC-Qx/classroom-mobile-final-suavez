@@ -12,10 +12,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -24,12 +26,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.projectstudy.core.util.toFeedDateLabel
-import com.example.projectstudy.features.feed.components.ActivityCard
+import com.example.projectstudy.ui.components.ActivityCard
 import com.example.projectstudy.features.feed.components.FeedDateHeader
 import com.example.projectstudy.features.feed.components.GroupBanner
 import com.example.projectstudy.features.feed.components.RankingSummaryCard
 import com.example.projectstudy.features.feed.viewmodel.FeedViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FeedScreen(
     onAddSessionClick: (String) -> Unit,
@@ -64,51 +67,59 @@ fun FeedScreen(
                         activity.startedAtMillis.toFeedDateLabel()
                     }
 
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .statusBarsPadding(),
-                    contentPadding = PaddingValues(
-                        start = 16.dp,
-                        top = 12.dp,
-                        end = 16.dp,
-                        bottom = 220.dp
-                    ),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    item {
-                        Text(
-                            text = "Feed",
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                PullToRefreshBox(
+                    modifier = Modifier.fillMaxSize(),
+                    isRefreshing = uiState.isRefreshing,
+                    onRefresh = {
+                        viewModel.refreshRemoteData()
                     }
-
-                    uiState.group?.let { group ->
+                ) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .statusBarsPadding(),
+                        contentPadding = PaddingValues(
+                            start = 16.dp,
+                            top = 12.dp,
+                            end = 16.dp,
+                            bottom = 220.dp
+                        ),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
                         item {
-                            GroupBanner(group = group)
-                        }
-
-                        item {
-                            RankingSummaryCard(
-                                group = group,
-                                ranking = uiState.ranking
+                            Text(
+                                text = "Feed",
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
-                    }
 
-                    groupedActivities.forEach { (dateLabel, activities) ->
-                        item {
-                            FeedDateHeader(label = dateLabel)
+                        uiState.group?.let { group ->
+                            item {
+                                GroupBanner(group = group)
+                            }
+
+                            item {
+                                RankingSummaryCard(
+                                    group = group,
+                                    ranking = uiState.ranking
+                                )
+                            }
                         }
 
-                        items(
-                            items = activities,
-                            key = { activity ->
-                                activity.id
+                        groupedActivities.forEach { (dateLabel, activities) ->
+                            item {
+                                FeedDateHeader(label = dateLabel)
                             }
-                        ) { activity ->
-                            ActivityCard(activity = activity)
+
+                            items(
+                                items = activities,
+                                key = { activity ->
+                                    activity.id
+                                }
+                            ) { activity ->
+                                ActivityCard(activity = activity)
+                            }
                         }
                     }
                 }

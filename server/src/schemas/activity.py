@@ -20,4 +20,6 @@ class StudyActivity(BaseSchema):
     started_at_millis: int
     ended_at_millis: int
     created_at_millis: int
+    updated_at_millis: int
     is_manual: bool = False
+    

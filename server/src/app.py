@@ -8,6 +8,9 @@ from src.api.group import router as group_router
 from src.api.sync import router as sync_router
 from src.api.auth import router as auth_router
 from src.database import Base, engine
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+from src.api.media import router as media_router
 
 
 @asynccontextmanager
@@ -32,6 +35,19 @@ app = FastAPI(
     redirect_slashes=False,
 )
 
+uploads_dir = Path("uploads")
+uploads_dir.mkdir(
+    parents=True,
+    exist_ok=True,
+)
+
+app.mount(
+    "/uploads",
+    StaticFiles(directory=uploads_dir),
+    name="uploads",
+)
+
+app.include_router(media_router)
 app.include_router(health_router)
 app.include_router(user_router)
 app.include_router(activity_router)
