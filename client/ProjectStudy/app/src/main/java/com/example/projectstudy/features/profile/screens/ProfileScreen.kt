@@ -22,7 +22,7 @@ import com.example.projectstudy.features.profile.components.ProfileBadgeRow
 import com.example.projectstudy.features.profile.components.ProfileHeader
 import com.example.projectstudy.features.profile.components.ProfileStatsRow
 import com.example.projectstudy.features.profile.components.ProfileStreakCard
-import com.example.projectstudy.features.profile.components.RecentSessionItem
+import com.example.projectstudy.ui.components.ActivityCard
 import com.example.projectstudy.features.profile.viewmodel.ProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -108,7 +108,7 @@ fun ProfileScreen(
                                 activity.id
                             }
                         ) { activity ->
-                            RecentSessionItem(
+                            ActivityCard(
                                 activity = activity
                             )
                         }

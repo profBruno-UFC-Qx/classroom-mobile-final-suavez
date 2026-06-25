@@ -1,4 +1,4 @@
-package com.example.projectstudy.features.feed.components
+package com.example.projectstudy.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,7 +26,6 @@ import coil.compose.AsyncImage
 import com.example.projectstudy.core.util.toDurationText
 import com.example.projectstudy.core.util.toHourText
 import com.example.projectstudy.domain.model.StudyActivity
-import com.example.projectstudy.ui.components.LumioAvatar
 
 @Composable
 fun ActivityCard(
