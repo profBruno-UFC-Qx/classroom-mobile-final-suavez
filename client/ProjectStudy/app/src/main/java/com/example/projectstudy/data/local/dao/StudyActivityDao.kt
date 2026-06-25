@@ -204,4 +204,34 @@ interface StudyActivityDao {
     suspend fun getMediaUrisByActivityId(
         activityId: String
     ): List<String>
+
+    @Query("SELECT COUNT(*) FROM study_activities")
+    suspend fun countActivities(): Int
+
+    @Query("SELECT COUNT(*) FROM activity_group_cross_refs")
+    suspend fun countActivityGroupRefs(): Int
+
+    @Query(
+        """
+    SELECT COUNT(*)
+    FROM study_activities
+    INNER JOIN activity_group_cross_refs
+        ON study_activities.id = activity_group_cross_refs.activityId
+    WHERE activity_group_cross_refs.groupId = :groupId
+    """
+    )
+    suspend fun countActivitiesByGroupId(
+        groupId: String
+    ): Int
+
+    @Query(
+        """
+    SELECT COUNT(*)
+    FROM study_activities
+    WHERE authorId = :userId
+    """
+    )
+    suspend fun countActivitiesByUserId(
+        userId: String
+    ): Int
 }

@@ -49,9 +49,33 @@ data class GroupRemoteDto(
 )
 
 @Serializable
+data class RankingUserRemoteDto(
+    val id: String,
+    val name: String,
+    val username: String,
+    val email: String = "",
+    val institution: String = "",
+    val course: String = "",
+    val avatarInitials: String = "",
+    val avatarUrl: String = ""
+)
+
+@Serializable
+data class RankingEntryRemoteDto(
+    val groupId: String,
+    val user: RankingUserRemoteDto,
+    val totalMinutes: Int,
+    val activeDays: Int,
+    val position: Int,
+    val isCurrentUser: Boolean,
+    val updatedAtMillis: Long
+)
+
+@Serializable
 data class SyncPullResponseDto(
     val activities: List<StudyActivityRemoteDto> = emptyList(),
     val groups: List<GroupRemoteDto> = emptyList(),
+    val rankingEntries: List<RankingEntryRemoteDto> = emptyList(),
     val serverTimestamp: Long
 )
 

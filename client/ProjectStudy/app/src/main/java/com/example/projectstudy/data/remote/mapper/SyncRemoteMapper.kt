@@ -3,8 +3,10 @@ package com.example.projectstudy.data.remote.mapper
 import com.example.projectstudy.data.local.entity.ActivityGroupCrossRef
 import com.example.projectstudy.data.local.entity.ActivityMediaEntity
 import com.example.projectstudy.data.local.entity.GroupEntity
+import com.example.projectstudy.data.local.entity.RankingEntryEntity
 import com.example.projectstudy.data.local.entity.StudyActivityEntity
 import com.example.projectstudy.data.remote.dto.GroupRemoteDto
+import com.example.projectstudy.data.remote.dto.RankingEntryRemoteDto
 import com.example.projectstudy.data.remote.dto.StudyActivityRemoteDto
 import com.example.projectstudy.data.remote.dto.SyncActivityRequestDto
 
@@ -105,5 +107,25 @@ fun StudyActivityEntity.toSyncRequest(
         updatedAtMillis = null,
         isManual = isManual,
         pendingSyncAction = pendingSyncAction ?: "CREATE"
+    )
+}
+
+fun RankingEntryRemoteDto.toEntity(): RankingEntryEntity {
+    return RankingEntryEntity(
+        id = "${groupId}_${user.id}",
+        groupId = groupId,
+        userId = user.id,
+        userDisplayName = user.name,
+        username = user.username,
+        userEmail = user.email,
+        userInstitution = user.institution,
+        userCourse = user.course,
+        userAvatarInitials = user.avatarInitials,
+        userAvatarUrl = user.avatarUrl,
+        totalMinutes = totalMinutes,
+        activeDays = activeDays,
+        position = position,
+        isCurrentUser = isCurrentUser,
+        lastSyncedAtMillis = updatedAtMillis
     )
 }
