@@ -31,6 +31,7 @@ import com.example.projectstudy.features.ranking.screens.RankingScreen
 import com.example.projectstudy.features.session.screens.ManualSessionScreen
 import com.example.projectstudy.ui.components.LumioBottomBar
 import androidx.compose.ui.graphics.Color
+import com.example.projectstudy.features.profile.screens.ProfileSettingsScreen
 
 /**
  * Componente responsável pela navegação principal do app.
@@ -145,7 +146,23 @@ fun AppNavigation() {
                         }
 
                         AppRoute.Profile -> NavEntry(route) {
-                            ProfileScreen()
+                            ProfileScreen(
+                                onSettingsClick = {
+                                    backStack.add(AppRoute.ProfileSettings)
+                                }
+                            )
+                        }
+
+                        AppRoute.ProfileSettings -> NavEntry(route) {
+                            ProfileSettingsScreen(
+                                onNavigateBack = {
+                                    goBack()
+                                },
+                                onLogoutClick = {
+                                    backStack.clear()
+                                    backStack.add(AppRoute.Login)
+                                }
+                            )
                         }
 
                         is AppRoute.ManualSession -> NavEntry(route) {

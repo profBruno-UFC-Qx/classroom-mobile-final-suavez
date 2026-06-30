@@ -25,4 +25,6 @@ sealed interface AppRoute : NavKey {
         val groupId: String
     ) : AppRoute
 
+    @Serializable
+    data object ProfileSettings : AppRoute
 }

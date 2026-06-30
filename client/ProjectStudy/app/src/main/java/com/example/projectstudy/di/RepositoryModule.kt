@@ -6,6 +6,11 @@ import com.example.projectstudy.data.local.repository.LocalGroupRepository
 import com.example.projectstudy.data.local.repository.LocalRankingRepository
 import com.example.projectstudy.data.local.repository.LocalSessionRepository
 import com.example.projectstudy.data.local.repository.LocalUserRepository
+import com.example.projectstudy.data.mock.FakeActivityRepository
+import com.example.projectstudy.data.mock.FakeGroupRepository
+import com.example.projectstudy.data.mock.FakeRankingRepository
+import com.example.projectstudy.data.mock.FakeSessionRepository
+import com.example.projectstudy.data.mock.FakeUserRepository
 import com.example.projectstudy.data.repository.ActivityRepository
 import com.example.projectstudy.data.repository.AuthRepository
 import com.example.projectstudy.data.repository.GroupRepository
