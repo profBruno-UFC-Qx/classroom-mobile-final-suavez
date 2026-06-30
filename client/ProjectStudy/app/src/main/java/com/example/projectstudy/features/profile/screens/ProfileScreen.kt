@@ -28,6 +28,7 @@ import com.example.projectstudy.features.profile.viewmodel.ProfileViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
+    onSettingsClick: () -> Unit,
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -72,7 +73,8 @@ fun ProfileScreen(
                     ) {
                         item {
                             ProfileHeader(
-                                user = user
+                                user = user,
+                                onSettingsClick = onSettingsClick
                             )
                         }
 
