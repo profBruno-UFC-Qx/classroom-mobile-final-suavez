@@ -2,12 +2,16 @@ package com.example.projectstudy.di
 
 import android.util.Log
 import com.example.projectstudy.data.remote.api.AuthApi
+import com.example.projectstudy.data.remote.dto.ErrorResponseDto
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.engine.android.Android
+import io.ktor.client.plugins.HttpResponseValidator
+import io.ktor.client.plugins.ResponseException
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
@@ -34,6 +38,8 @@ object NetworkModule {
     @Singleton
     fun provideHttpClient(): HttpClient {
         return HttpClient(Android) {
+            expectSuccess = true
+
             install(ContentNegotiation) {
                 json(
                     Json {
@@ -52,6 +58,23 @@ object NetworkModule {
                 }
 
                 level = LogLevel.BODY
+            }
+
+            HttpResponseValidator {
+                handleResponseExceptionWithRequest { exception, _ ->
+                    val responseException = exception as? ResponseException
+                        ?: return@handleResponseExceptionWithRequest
+
+                    val detail = runCatching {
+                        responseException.response
+                            .body<ErrorResponseDto>()
+                            .detail
+                    }.getOrNull()
+
+                    if (!detail.isNullOrBlank()) {
+                        throw Exception(detail, exception)
+                    }
+                }
             }
 
             defaultRequest {
