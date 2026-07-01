@@ -19,15 +19,16 @@ from src.database import Base, engine
 IS_VERCEL = os.getenv("VERCEL") == "1"
 
 
+if os.getenv("CREATE_TABLES_ON_STARTUP") == "true":
+    Base.metadata.create_all(bind=engine)
+    logger.info("Tabelas verificadas/criadas com SQLAlchemy.")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info(
         f"Worker iniciando e carregando recursos para: {app.title}"
     )
-
-    if os.getenv("CREATE_TABLES_ON_STARTUP") == "true":
-        Base.metadata.create_all(bind=engine)
-        logger.info("Tabelas verificadas/criadas com SQLAlchemy.")
 
     yield
 
