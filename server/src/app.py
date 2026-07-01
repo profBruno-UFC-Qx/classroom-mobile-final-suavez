@@ -1,8 +1,10 @@
 import os
 
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from loguru import logger
 
 from src.api.health import router as health_router
@@ -13,6 +15,8 @@ from src.api.auth import router as auth_router
 from src.api.media import router as media_router
 
 from src.database import Base, engine
+
+IS_VERCEL = os.getenv("VERCEL") == "1"
 
 
 @asynccontextmanager
@@ -38,6 +42,19 @@ app = FastAPI(
     lifespan=lifespan,
     redirect_slashes=False,
 )
+
+if not IS_VERCEL:
+    uploads_dir = Path("uploads")
+    uploads_dir.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    app.mount(
+        "/uploads",
+        StaticFiles(directory=uploads_dir),
+        name="uploads",
+    )
 
 app.include_router(media_router)
 app.include_router(health_router)
