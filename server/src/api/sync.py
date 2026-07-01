@@ -192,14 +192,9 @@ async def sync_offline_activities(
                     .first()
                 )
 
-                user_author = (
-                    db.query(DBUser)
-                    .filter(DBUser.id == act.author_id)
-                    .first()
-                )
-
-                if user_author is None:
-                    user_author = current_user
+                if existing and existing.author_id != current_user.id:
+                    failed.append(act.id)
+                    continue
 
                 if existing:
                     old_group_ids = list(existing.group_ids or [])
@@ -222,13 +217,6 @@ async def sync_offline_activities(
                     existing.created_at_millis = act.created_at_millis
                     existing.updated_at_millis = now
                     existing.is_manual = act.is_manual
-
-                    existing.author_id = user_author.id
-                    existing.author_name = user_author.name
-                    existing.author_avatar_initials = (
-                        user_author.avatar_initials
-                    )
-                    existing.author_avatar_url = user_author.avatar_url
                 else:
                     new_act = DBStudyActivity(
                         id=act.id,
@@ -246,12 +234,12 @@ async def sync_offline_activities(
                         created_at_millis=act.created_at_millis,
                         updated_at_millis=now,
                         is_manual=act.is_manual,
-                        author_id=user_author.id,
-                        author_name=user_author.name,
+                        author_id=current_user.id,
+                        author_name=current_user.name,
                         author_avatar_initials=(
-                            user_author.avatar_initials
+                            current_user.avatar_initials
                         ),
-                        author_avatar_url=user_author.avatar_url,
+                        author_avatar_url=current_user.avatar_url,
                     )
 
                     db.add(new_act)
@@ -274,6 +262,10 @@ async def sync_offline_activities(
                     .filter(DBStudyActivity.id == act.id)
                     .first()
                 )
+
+                if existing and existing.author_id != current_user.id:
+                    failed.append(act.id)
+                    continue
 
                 if existing:
                     affected_group_ids.extend(

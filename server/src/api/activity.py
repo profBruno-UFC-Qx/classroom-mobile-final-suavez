@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from src.database import get_db
 from src.models.activity import DBStudyActivity
+from src.models.user import DBUser
 from src.schemas.activity import StudyActivity
 from src.schemas.user import ActivityAuthor
 from src.security import get_current_user
@@ -17,7 +18,9 @@ router = APIRouter(
 
 @router.post("", response_model=StudyActivity, status_code=status.HTTP_201_CREATED)
 async def publish_activity(
-    activity: StudyActivity, db: Session = Depends(get_db)
+    activity: StudyActivity,
+    db: Session = Depends(get_db),
+    current_user: DBUser = Depends(get_current_user),
 ):
     db_activity = (
         db.query(DBStudyActivity)
@@ -42,10 +45,10 @@ async def publish_activity(
         ended_at_millis=activity.ended_at_millis,
         created_at_millis=activity.created_at_millis,
         is_manual=activity.is_manual,
-        author_id=activity.author.id,
-        author_name=activity.author.name,
-        author_avatar_initials=activity.author.avatar_initials,
-        author_avatar_url=activity.author.avatar_url,
+        author_id=current_user.id,
+        author_name=current_user.name,
+        author_avatar_initials=current_user.avatar_initials,
+        author_avatar_url=current_user.avatar_url,
         group_ids=activity.group_ids,
         media_uris=activity.media_uris,
         reactions=activity.reactions,
