@@ -31,7 +31,7 @@ object NetworkModule {
     @Singleton
     @Named("BaseUrl")
     fun provideBaseUrl(): String {
-        return "http://10.10.219.190:8000"
+        return "https://projectstudyserver.vercel.app"
     }
 
     @Provides
