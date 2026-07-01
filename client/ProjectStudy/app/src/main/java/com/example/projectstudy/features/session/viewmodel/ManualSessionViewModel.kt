@@ -120,7 +120,7 @@ class ManualSessionViewModel @Inject constructor(
         }
     }
 
-    private fun loadGroups() {
+    fun loadGroups() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(
                 isLoading = true,

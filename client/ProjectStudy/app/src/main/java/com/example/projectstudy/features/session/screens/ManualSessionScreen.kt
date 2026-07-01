@@ -47,6 +47,10 @@ fun ManualSessionScreen(
         mutableStateOf(false)
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.loadGroups()
+    }
+
     val mediaPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(
             maxItems = 20
