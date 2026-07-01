@@ -47,6 +47,11 @@ class JoinGroupViewModel @Inject constructor(
 
     private fun joinGroup() {
         val current = _uiState.value
+
+        if (current.isLoading) {
+            return
+        }
+
         val inviteCode = current.inviteCode.trim()
 
         if (inviteCode.isBlank()) {
@@ -56,12 +61,12 @@ class JoinGroupViewModel @Inject constructor(
             return
         }
 
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(
-                isLoading = true,
-                error = null
-            )
+        _uiState.value = current.copy(
+            isLoading = true,
+            error = null
+        )
 
+        viewModelScope.launch {
             val token = authRepository.getAccessToken()
 
             if (token.isNullOrBlank()) {
