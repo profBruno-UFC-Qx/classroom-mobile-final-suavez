@@ -15,6 +15,9 @@ sealed interface AppRoute : NavKey {
     data object Group : AppRoute
 
     @Serializable
+    data object JoinGroup : AppRoute
+
+    @Serializable
     data object Ranking : AppRoute
 
     @Serializable

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.projectstudy.data.repository.AuthRepository
 import com.example.projectstudy.data.sync.RemoteSyncService
+import com.example.projectstudy.domain.model.NoUserGroupException
 import com.example.projectstudy.domain.usecase.GetFirstUserGroupUseCase
 import com.example.projectstudy.domain.usecase.GetGroupActivitiesUseCase
 import com.example.projectstudy.domain.usecase.GetGroupRankingUseCase
@@ -42,7 +43,8 @@ class FeedViewModel @Inject constructor(
         loadFeedJob = viewModelScope.launch {
             _uiState.value = _uiState.value.copy(
                 isLoading = true,
-                error = null
+                error = null,
+                hasNoGroup = false
             )
 
             try {
@@ -66,6 +68,12 @@ class FeedViewModel @Inject constructor(
                         _uiState.value = newState
                     }
 
+            } catch (e: NoUserGroupException) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    isRefreshing = false,
+                    hasNoGroup = true
+                )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,

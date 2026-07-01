@@ -10,5 +10,6 @@ data class FeedUiState(
     val group: Group? = null,
     val ranking: List<RankingEntry> = emptyList(),
     val activities: List<StudyActivity> = emptyList(),
-    val error: String? = null
+    val error: String? = null,
+    val hasNoGroup: Boolean = false
 )

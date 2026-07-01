@@ -26,6 +26,7 @@ import com.example.projectstudy.features.auth.screens.LoginScreen
 import com.example.projectstudy.features.auth.screens.RegisterScreen
 import com.example.projectstudy.features.auth.viewmodel.AuthSessionViewModel
 import com.example.projectstudy.features.feed.screens.FeedScreen
+import com.example.projectstudy.features.group.screens.JoinGroupScreen
 import com.example.projectstudy.features.profile.screens.ProfileScreen
 import com.example.projectstudy.features.ranking.screens.RankingScreen
 import com.example.projectstudy.features.session.screens.ManualSessionScreen
@@ -137,6 +138,19 @@ fun AppNavigation() {
                                     backStack.add(
                                         AppRoute.ManualSession(groupId)
                                     )
+                                },
+                                onNoGroupSynced = {
+                                    backStack.clear()
+                                    backStack.add(AppRoute.JoinGroup)
+                                }
+                            )
+                        }
+
+                        AppRoute.JoinGroup -> NavEntry(route) {
+                            JoinGroupScreen(
+                                onJoinSuccess = {
+                                    backStack.clear()
+                                    backStack.add(AppRoute.Group)
                                 }
                             )
                         }

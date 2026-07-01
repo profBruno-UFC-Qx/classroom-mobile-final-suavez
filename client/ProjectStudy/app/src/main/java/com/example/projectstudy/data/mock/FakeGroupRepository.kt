@@ -27,4 +27,13 @@ class FakeGroupRepository @Inject constructor() : GroupRepository {
             )
         }
     }
+
+    override suspend fun joinGroup(
+        token: String,
+        inviteCode: String
+    ): Result<Unit> {
+        delay(500)
+
+        return Result.success(Unit)
+    }
 }

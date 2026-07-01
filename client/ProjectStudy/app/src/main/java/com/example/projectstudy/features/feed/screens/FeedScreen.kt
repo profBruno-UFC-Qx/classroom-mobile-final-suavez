@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -36,15 +37,22 @@ import com.example.projectstudy.features.feed.viewmodel.FeedViewModel
 @Composable
 fun FeedScreen(
     onAddSessionClick: (String) -> Unit,
+    onNoGroupSynced: () -> Unit,
     viewModel: FeedViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(uiState.hasNoGroup) {
+        if (uiState.hasNoGroup) {
+            onNoGroupSynced()
+        }
+    }
 
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         when {
-            uiState.isLoading -> {
+            uiState.isLoading || uiState.hasNoGroup -> {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center)
                 )

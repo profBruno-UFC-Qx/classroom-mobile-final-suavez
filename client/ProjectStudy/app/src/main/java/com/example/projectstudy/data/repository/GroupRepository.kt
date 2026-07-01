@@ -37,4 +37,19 @@ interface GroupRepository {
      * @return Fluxo com a lista de grupos do usuário.
      */
     fun observeUserGroups(): Flow<List<Group>>
+
+    /**
+     * Entra em um grupo existente usando um código de convite.
+     *
+     * Em caso de sucesso, o grupo retornado pelo servidor é salvo no banco
+     * local, fazendo com que [observeFirstUserGroup] e [observeUserGroups]
+     * passem a emitir esse grupo automaticamente.
+     *
+     * @param token Token de acesso do usuário autenticado.
+     * @param inviteCode Código de convite do grupo.
+     */
+    suspend fun joinGroup(
+        token: String,
+        inviteCode: String
+    ): Result<Unit>
 }
