@@ -227,3 +227,5 @@ __marimo__/
 
 server/.env
 server/project_study.db
+.vercel
+.env*
