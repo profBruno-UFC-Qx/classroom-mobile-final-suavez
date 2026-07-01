@@ -9,8 +9,10 @@ import com.example.projectstudy.features.group.state.JoinGroupEvent
 import com.example.projectstudy.features.group.state.JoinGroupUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 @HiltViewModel
@@ -22,6 +24,9 @@ class JoinGroupViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(JoinGroupUiState())
     val uiState = _uiState.asStateFlow()
+
+    private val _joinSuccessEvents = Channel<Unit>(Channel.BUFFERED)
+    val joinSuccessEvents = _joinSuccessEvents.receiveAsFlow()
 
     fun onEvent(event: JoinGroupEvent) {
         when (event) {
@@ -35,12 +40,6 @@ class JoinGroupViewModel @Inject constructor(
 
             JoinGroupEvent.JoinClicked -> {
                 joinGroup()
-            }
-
-            JoinGroupEvent.JoinHandled -> {
-                _uiState.value = _uiState.value.copy(
-                    joined = false
-                )
             }
         }
     }
@@ -90,14 +89,14 @@ class JoinGroupViewModel @Inject constructor(
 
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        joined = true,
                         error = null
                     )
+
+                    _joinSuccessEvents.send(Unit)
                 }
                 .onFailure { throwable ->
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        joined = false,
                         error = throwable.message
                             ?: "Não foi possível entrar no grupo"
                     )

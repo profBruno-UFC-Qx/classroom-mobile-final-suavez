@@ -7,6 +7,5 @@ sealed interface JoinGroupEvent {
     ) : JoinGroupEvent
 
     data object JoinClicked : JoinGroupEvent
-    data object JoinHandled : JoinGroupEvent
 
 }

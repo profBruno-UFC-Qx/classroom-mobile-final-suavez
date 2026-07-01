@@ -43,9 +43,8 @@ fun JoinGroupScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(uiState.joined) {
-        if (uiState.joined) {
-            viewModel.onEvent(JoinGroupEvent.JoinHandled)
+    LaunchedEffect(Unit) {
+        viewModel.joinSuccessEvents.collect {
             onJoinSuccess()
         }
     }

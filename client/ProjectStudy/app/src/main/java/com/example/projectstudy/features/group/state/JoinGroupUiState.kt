@@ -5,6 +5,5 @@ data class JoinGroupUiState(
     val inviteCodeError: String? = null,
 
     val isLoading: Boolean = false,
-    val error: String? = null,
-    val joined: Boolean = false
+    val error: String? = null
 )
