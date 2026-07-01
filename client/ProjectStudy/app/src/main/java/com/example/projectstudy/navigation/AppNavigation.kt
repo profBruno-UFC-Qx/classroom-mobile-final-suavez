@@ -173,8 +173,7 @@ fun AppNavigation() {
                                     goBack()
                                 },
                                 onLogoutClick = {
-                                    backStack.clear()
-                                    backStack.add(AppRoute.Login)
+                                    authSessionViewModel.logout()
                                 }
                             )
                         }
