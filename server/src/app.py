@@ -3,7 +3,6 @@ from fastapi.concurrency import asynccontextmanager
 from loguru import logger
 from src.api.health import router as health_router
 from src.api.user import router as user_router
-from src.api.activity import router as activity_router
 from src.api.group import router as group_router
 from src.api.sync import router as sync_router
 from src.api.auth import router as auth_router
@@ -50,7 +49,6 @@ app.mount(
 app.include_router(media_router)
 app.include_router(health_router)
 app.include_router(user_router)
-app.include_router(activity_router)
 app.include_router(group_router)
 app.include_router(sync_router)
 app.include_router(auth_router)
