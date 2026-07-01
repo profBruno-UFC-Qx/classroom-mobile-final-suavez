@@ -20,23 +20,6 @@ router = APIRouter(
 )
 
 
-@router.post("", response_model=User, status_code=status.HTTP_201_CREATED)
-async def create_user(user: User, db: Session = Depends(get_db)):
-    db_user = db.query(DBUser).filter(DBUser.id == user.id).first()
-
-    if db_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Usuário já cadastrado"
-        )
-
-    new_user = DBUser(**user.model_dump())
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-
-    return new_user
-
-
 @router.get("/{user_id}", response_model=User)
 async def get_user(user_id: str, db: Session = Depends(get_db)):
     db_user = db.query(DBUser).filter(DBUser.id == user_id).first()
