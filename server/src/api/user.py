@@ -50,10 +50,18 @@ async def get_user(user_id: str, db: Session = Depends(get_db)):
 
 @router.get("/{user_id}/groups", response_model=List[Group])
 async def get_user_groups(
-    user_id: str, db: Session = Depends(get_db)
+    user_id: str,
+    db: Session = Depends(get_db),
+    current_user: DBUser = Depends(get_current_user),
 ):
+    if user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Você não pode ver os grupos de outro usuário.",
+        )
+
     all_groups = db.query(DBGroup).all()
-    
+
     return [g for g in all_groups if user_id in (g.member_ids or [])]
 
 
@@ -61,8 +69,16 @@ async def get_user_groups(
     "/{user_id}/activities", response_model=List[StudyActivity]
 )
 async def get_user_activities(
-    user_id: str, db: Session = Depends(get_db)
+    user_id: str,
+    db: Session = Depends(get_db),
+    current_user: DBUser = Depends(get_current_user),
 ):
+    if user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Você não pode ver as atividades de outro usuário.",
+        )
+
     activities = (
         db.query(DBStudyActivity)
         .filter(DBStudyActivity.author_id == user_id)

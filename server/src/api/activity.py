@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from src.database import get_db
 from src.models.activity import DBStudyActivity
+from src.models.group import DBGroup
 from src.models.user import DBUser
 from src.schemas.activity import StudyActivity
 from src.schemas.user import ActivityAuthor
@@ -31,6 +32,21 @@ async def publish_activity(
     if db_activity:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Atividade já existente"
+        )
+
+    groups = (
+        db.query(DBGroup)
+        .filter(DBGroup.id.in_(activity.group_ids or []))
+        .all()
+    )
+
+    if len(groups) != len(set(activity.group_ids or [])) or any(
+        current_user.id not in (group.member_ids or [])
+        for group in groups
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Você não pertence a um dos grupos informados.",
         )
 
     new_activity = DBStudyActivity(

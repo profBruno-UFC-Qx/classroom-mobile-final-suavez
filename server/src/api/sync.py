@@ -65,13 +65,6 @@ def recalculate_group_progress(
         if activity.author_id == current_user_id
     )
 
-    member_ids = list(group.member_ids or [])
-
-    if current_user_id not in member_ids:
-        member_ids.append(current_user_id)
-
-    group.member_ids = member_ids
-    group.member_count = len(member_ids)
     group.current_minutes = current_minutes
     group.user_minutes = user_minutes
     group.user_ranking_position = 1 if user_minutes > 0 else 0
@@ -193,6 +186,22 @@ async def sync_offline_activities(
                 )
 
                 if existing and existing.author_id != current_user.id:
+                    failed.append(act.id)
+                    continue
+
+                requested_group_ids = set(act.group_ids or [])
+                member_groups = (
+                    db.query(DBGroup)
+                    .filter(DBGroup.id.in_(requested_group_ids))
+                    .all()
+                )
+
+                if len(member_groups) != len(
+                    requested_group_ids
+                ) or any(
+                    current_user.id not in (group.member_ids or [])
+                    for group in member_groups
+                ):
                     failed.append(act.id)
                     continue
 

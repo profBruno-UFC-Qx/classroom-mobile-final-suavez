@@ -42,7 +42,11 @@ async def create_group(group: Group, db: Session = Depends(get_db)):
 
 
 @router.get("/{group_id}", response_model=Group)
-async def get_group(group_id: str, db: Session = Depends(get_db)):
+async def get_group(
+    group_id: str,
+    db: Session = Depends(get_db),
+    current_user: DBUser = Depends(get_current_user),
+):
     db_group = (
         db.query(DBGroup).filter(DBGroup.id == group_id).first()
     )
@@ -52,6 +56,12 @@ async def get_group(group_id: str, db: Session = Depends(get_db)):
             status_code=404, detail="Grupo não encontrado"
         )
 
+    if current_user.id not in (db_group.member_ids or []):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Você não pertence a este grupo.",
+        )
+
     return db_group
 
 
@@ -59,8 +69,25 @@ async def get_group(group_id: str, db: Session = Depends(get_db)):
     "/{group_id}/activities", response_model=List[StudyActivity]
 )
 async def get_group_activities(
-    group_id: str, db: Session = Depends(get_db)
+    group_id: str,
+    db: Session = Depends(get_db),
+    current_user: DBUser = Depends(get_current_user),
 ):
+    db_group = (
+        db.query(DBGroup).filter(DBGroup.id == group_id).first()
+    )
+
+    if not db_group:
+        raise HTTPException(
+            status_code=404, detail="Grupo não encontrado"
+        )
+
+    if current_user.id not in (db_group.member_ids or []):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Você não pertence a este grupo.",
+        )
+
     all_activities = db.query(DBStudyActivity).all()
     filtered = [
         act for act in all_activities if group_id in act.group_ids
