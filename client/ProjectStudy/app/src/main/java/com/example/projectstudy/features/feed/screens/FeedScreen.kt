@@ -42,6 +42,10 @@ fun FeedScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.loadFeed()
+    }
+
     LaunchedEffect(uiState.hasNoGroup) {
         if (uiState.hasNoGroup) {
             onNoGroupSynced()
