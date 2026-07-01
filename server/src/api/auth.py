@@ -82,7 +82,10 @@ async def register_user(
     )
 
 
-@router.post("/login")
+@router.post(
+    "/login",
+    response_model=Token,
+)
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db),
@@ -112,11 +115,11 @@ async def login(
         }
     )
 
-    return {
-    "access_token": access_token,
-    "token_type": "bearer",
-    "user": User.model_validate(user).model_dump(by_alias=True),
-}
+    return Token(
+        access_token=access_token,
+        token_type="bearer",
+        user=user,
+    )
 
 
 @router.get("/me", response_model=User)
