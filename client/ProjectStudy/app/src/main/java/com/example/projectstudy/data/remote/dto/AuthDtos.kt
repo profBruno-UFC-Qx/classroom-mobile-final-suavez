@@ -1,6 +1,5 @@
 package com.example.projectstudy.data.remote.dto
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -14,19 +13,8 @@ data class RegisterRequestDto(
 )
 
 @Serializable
-data class RegisterResponseDto(
+data class AuthResponseDto(
     val accessToken: String,
     val tokenType: String,
-    val user: UserDto
-)
-
-@Serializable
-data class LoginResponseDto(
-    @SerialName("access_token")
-    val accessToken: String,
-
-    @SerialName("token_type")
-    val tokenType: String,
-
     val user: UserDto
 )

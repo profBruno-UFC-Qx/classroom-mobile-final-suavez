@@ -1,8 +1,7 @@
 package com.example.projectstudy.data.remote.api
 
-import com.example.projectstudy.data.remote.dto.LoginResponseDto
+import com.example.projectstudy.data.remote.dto.AuthResponseDto
 import com.example.projectstudy.data.remote.dto.RegisterRequestDto
-import com.example.projectstudy.data.remote.dto.RegisterResponseDto
 import com.example.projectstudy.data.remote.dto.UserDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -24,7 +23,7 @@ class AuthApi @Inject constructor(
 ) {
     suspend fun register(
         request: RegisterRequestDto
-    ): RegisterResponseDto {
+    ): AuthResponseDto {
         return client.post("$baseUrl/auth/register") {
             header(
                 HttpHeaders.ContentType,
@@ -37,7 +36,7 @@ class AuthApi @Inject constructor(
     suspend fun login(
         username: String,
         password: String
-    ): LoginResponseDto {
+    ): AuthResponseDto {
         return client.post("$baseUrl/auth/login") {
             setBody(
                 FormDataContent(
