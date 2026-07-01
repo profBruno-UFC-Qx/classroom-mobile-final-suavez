@@ -1,3 +1,4 @@
+import time
 from typing import List
 
 from fastapi import APIRouter, HTTPException, status, Depends
@@ -125,6 +126,7 @@ async def join_group(
     members.append(current_user.id)
     group.member_ids = members
     group.member_count = len(members)
+    group.updated_at_millis = int(time.time() * 1000)
 
     db.commit()
     db.refresh(group)
