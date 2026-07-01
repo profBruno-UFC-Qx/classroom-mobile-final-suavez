@@ -43,3 +43,45 @@ O sistema visa aumentar a retenção dos usuários em seus cronogramas de estudo
 - [RN04] Validação de Atividade: Uma atividade só será considerada válida para a streak e para o ranking se contiver, no mínimo, um título e o registro do tempo decorrido.
 
 - [RN05] Unicidade de Username: Não poderá haver dois usuários com o mesmo username (@) na plataforma.
+
+# 7. Estado Atual da Implementação
+
+O projeto conta com um app Android (client) e um backend (server) já funcionais e integrados.
+
+## 7.1 Stack Tecnológica
+
+**Client** (`client/ProjectStudy`): Kotlin, Jetpack Compose, Navigation3, Hilt (DI), Room (persistência local), Ktor Client (HTTP), Coil (imagens).
+
+**Server** (`server`): FastAPI, SQLAlchemy, SQLite, autenticação JWT (PyJWT + passlib/bcrypt), uvicorn. Roda localmente (sem deploy em nuvem no momento).
+
+## 7.2 Arquitetura e Sincronização
+
+O app funciona com Room como fonte da verdade local e sincroniza com o backend via `RemoteSyncService`:
+
+- **Push:** atividades pendentes criadas offline são enviadas ao servidor (`POST /sync/activity`).
+- **Pull:** `GET /sync/pull` traz grupos, atividades e ranking atualizados, que são gravados no Room e propagados à UI via `Flow`.
+- Login e pull-to-refresh (Feed/Perfil) disparam esse fluxo de sincronização.
+
+Upload de imagens de sessão: URI de conteúdo local → salva localmente (`LocalMediaStorage`) → enviada para `POST /media/activity-image` → servidor retorna URL pública servida em `/uploads` → atividade sincronizada com essa URL.
+
+## 7.3 Funcionalidades Implementadas
+
+- Cadastro e login de usuário com JWT (`/auth/register`, `/auth/login`, `/auth/me`).
+- Perfil com estatísticas (tempo total, quantidade de atividades, streak) calculadas a partir das atividades locais.
+- Registro de sessão de estudo manual (título, descrição, categoria, foto, tempo).
+- Grupos: criação, listagem, entrada por código de convite (`/group`, `/group/{id}`, `/group/join`), com autorização por membership.
+- Feed de atividades do grupo e ranking de membros.
+- Sincronização bidirecional (push/pull) e pull-to-refresh no Feed e no Perfil.
+- Persistência local das imagens de atividade (sobrevive a reinício do app).
+
+## 7.4 Como Rodar Localmente
+
+**Servidor:**
+```bash
+cd server
+cp .env.example .env   # ajuste SECRET_KEY
+uv sync
+uv run uvicorn main:app --reload --host 0.0.0.0
+```
+
+**Client:** abra `client/ProjectStudy` no Android Studio. Ajuste a URL base em `app/src/main/java/com/example/projectstudy/di/NetworkModule.kt` para o IP local da máquina rodando o servidor (`hostname -I` / `ip addr`), já que o backend não está publicado em nuvem.
