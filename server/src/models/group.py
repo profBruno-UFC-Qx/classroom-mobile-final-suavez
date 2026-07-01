@@ -1,6 +1,6 @@
 import time
 
-from sqlalchemy import JSON, Boolean, Integer, String
+from sqlalchemy import JSON, BigInteger, Boolean, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.database import Base
@@ -27,6 +27,6 @@ class DBGroup(Base):
     user_ranking_position: Mapped[int] = mapped_column(Integer, default=0)
     user_minutes: Mapped[int] = mapped_column(Integer, default=0)
     ranking_metric: Mapped[str] = mapped_column(String)
-    created_at_millis: Mapped[int] = mapped_column(Integer)
-    updated_at_millis: Mapped[int] = mapped_column(Integer,default=current_time_millis)
+    created_at_millis: Mapped[int] = mapped_column(BigInteger)
+    updated_at_millis: Mapped[int] = mapped_column(BigInteger, default=current_time_millis)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
